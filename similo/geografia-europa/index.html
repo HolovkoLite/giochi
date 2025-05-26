@@ -10,6 +10,7 @@
       margin: 0;
       padding: 0;
       background: linear-gradient(to bottom, #F4F6F7, #FFFFFF); /* Grigio Molto Chiaro -> Bianco */
+      padding-bottom: 120px; /* Aggiunto spazio per il footer */
     }
     header {
       background-color: #004080; /* Blu Intenso */
@@ -83,12 +84,12 @@
       display: flex;
       flex-direction: column;
     }
-  .card img {
-    width: 100%;
-    height: 150px; 
-    object-fit: contain; /* MODIFICATO DA cover A contain */
-    border-bottom: 1px solid #E0E0E0;
-    }
+   .card img {
+     width: 100%;
+     height: 150px; 
+     object-fit: contain; /* MODIFICATO DA cover A contain per le bandiere */
+     border-bottom: 1px solid #E0E0E0; /* Bordo Grigio Chiaro */
+   }
     .card p {
       margin: 0;
       padding: 5px;
@@ -222,6 +223,20 @@
     }
     .card .mark.different-mark {
         background-color: rgba(220, 53, 69, 0.9); /* Rosso Pericolo (Bootstrap) */
+    }
+
+    /* Stili per il Footer */
+    footer {
+      padding: 25px 15px;
+      margin-top: 50px;
+      text-align: center;
+      font-size: 0.75em;
+      color: #777; /* Grigio neutro, si adatta bene a molti temi */
+      border-top: 1px solid #E0E0E0; /* Grigio chiaro per il bordo */
+      line-height: 1.6;
+    }
+    footer p {
+      margin: 0;
     }
 
   </style>
@@ -531,5 +546,14 @@
     initGame();
 
   </script>
+
+  <footer>
+    <p>
+      Progetto digitale amatoriale e non ufficiale, ispirato al gioco da tavolo Similo™, usato a scopi didattici e non giocabile senza la copia fisica del gioco.<br>
+      Similo™ è un gioco ideato da Martino Chiacchiera, Hjalmar Hach & Pierluca Zizzi, pubblicato da Horrible Guild.<br>
+      Tutti i diritti sul concept del gioco originale, nomi e illustrazioni (se riprodotte o derivate) appartengono ai rispettivi detentori.
+    </p>
+  </footer>
+
 </body>
 </html>
