@@ -67,10 +67,9 @@
       padding: 20px;
     }
 
-    /* === MODIFICHE PRINCIPALI PER NUOVO STILE CARTA === */
     .card {
-      width: 150px;       /* Mantenuta larghezza per consistenza layout */
-      height: 250px;      /* NUOVA ALTEZZA per adattarsi all'immagine 180x295 */
+      width: 150px;
+      height: 250px;
       position: relative;
       border: 2px solid #ccc;
       border-radius: 10px;
@@ -78,59 +77,47 @@
       cursor: pointer;
       background-color: white;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      /* display: flex; non più necessario qui */
     }
     .card img {
       width: 100%;
-      height: 100%;      /* L'immagine ora occupa tutta la carta */
-      object-fit: cover; /* Assicura che l'immagine copra sempre lo spazio */
-      /* border-bottom non più necessario */
+      height: 100%;
+      object-fit: cover;
     }
     .card p {
-      /* Stile completamente rivisto per l'overlay */
       position: absolute;
       top: 0;
       left: 0;
-      writing-mode: vertical-rl; /* Testo verticale */
-      transform: rotate(180deg);   /* Ruota il testo per leggerlo dall'alto in basso */
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
       
-      background-color: rgba(0, 0, 0, 0.6); /* Sfondo nero semitrasparente */
+      background-color: rgba(0, 0, 0, 0.6);
       color: white;
       font-weight: bold;
-      text-transform: uppercase;   /* Testo in maiuscolo come nell'esempio */
+      text-transform: uppercase;
       
       margin: 0;
-      padding: 15px 8px; /* Spaziatura interna */
+      padding: 15px 6px;       /* MODIFICA: Ridotta larghezza (padding laterale) */
       height: 100%;
-      box-sizing: border-box; /* Padding incluso nell'altezza totale */
+      box-sizing: border-box;
 
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-size: 1.1em;
-      letter-spacing: 2px; /* Spazio tra le lettere */
+      font-size: 1em;          /* MODIFICA: Scritta più piccola */
+      letter-spacing: 1px;     /* MODIFICA: Spaziatura lettere ridotta */
     }
-    /* === FINE MODIFICHE STILE CARTA === */
     
-    /* === MODIFICHE PER LO STATO .covered === */
     .card.covered {
       background-color: #4a2e1b !important;
-      display: flex; /* Aggiunto per centrare il "???" */
-      align-items: center;
-      justify-content: center;
     }
+
     .card.covered img,
-    .card.covered p { /* Nasconde sia l'immagine che il nome overlay */
+    .card.covered p {
       display: none;
     }
-    .card.covered::before { /* Usiamo un pseudo-elemento per mostrare "???" */
-      content: "";
-      font-size: 3em;
-      font-weight: bold;
-      color: white;
-    }
-    /* === FINE MODIFICHE STATO .covered === */
+
+    /* MODIFICA: La regola per .card.covered::before è stata rimossa per eliminare "???" */
 
     .win-message {
       font-size: 2rem;
@@ -197,7 +184,7 @@
         margin-left: auto;
         margin-right: auto;
         padding: 0 20px;
-        min-height: 260px; /* Aggiornato per la nuova altezza delle carte */
+        min-height: 260px;
     }
     .card .mark {
         position: absolute;
@@ -268,7 +255,7 @@
       { name: "Giulio Cesare", img: "images/giulio_cesare.png" },
       { name: "Napoleone Bonaparte", img: "images/napoleone.jpg" },
       { name: "Giovanna d'Arco", img: "images/giovanna_darco.jpg" },
-      { name: "Vincent Van Gogh", img: "images/vincent_vangogh.jpg" }, 
+      { name: "Personaggio Fittizio 5", img: "images/placeholder.png" }, 
       { name: "Personaggio Fittizio 6", img: "images/placeholder.png" },
       { name: "Personaggio Fittizio 7", img: "images/placeholder.png" },
       { name: "Personaggio Fittizio 8", img: "images/placeholder.png" },
