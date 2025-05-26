@@ -10,6 +10,7 @@
       margin: 0;
       padding: 0;
       background: linear-gradient(to bottom, #f0e6d2, #fff);
+      padding-bottom: 80px; /* Aggiunto spazio per il footer se il contenuto è corto */
     }
     header {
       background-color: #4a2e1b;
@@ -96,7 +97,7 @@
       text-transform: uppercase;
       
       margin: 0;
-      padding: 15px 4px;       /* MODIFICA PIÙ EVIDENTE: Overlay più stretto */
+      padding: 15px 4px;
       height: 100%;
       box-sizing: border-box;
 
@@ -104,7 +105,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-size: 0.9em;        /* MODIFICA PIÙ EVIDENTE: Scritta ancora più piccola */
+      font-size: 0.9em;
       letter-spacing: 1px;
     }
     
@@ -205,6 +206,20 @@
     }
     .card .mark.different-mark {
         background-color: rgba(220, 20, 60, 0.85); 
+    }
+
+    /* Stili per il Footer */
+    footer {
+      padding: 25px 15px;
+      margin-top: 50px;
+      text-align: center;
+      font-size: 0.75em;
+      color: #777;
+      border-top: 1px solid #e0e0e0;
+      line-height: 1.6;
+    }
+    footer p {
+      margin: 0;
     }
 
   </style>
@@ -492,5 +507,14 @@
     initGame(); 
 
   </script>
+
+  <footer>
+    <p>
+      Questo è un progetto digitale amatoriale e non ufficiale, ispirato al gioco da tavolo Similo™.<br>
+      Similo™ è un gioco ideato da Martino Chiacchiera, Hjalmar Hach & Pierluca Zizzi, pubblicato da Horrible Guild.<br>
+      Tutti i diritti sul concept del gioco originale, nomi e illustrazioni (se riprodotte o derivate) appartengono ai rispettivi detentori.
+    </p>
+  </footer>
+
 </body>
 </html>
