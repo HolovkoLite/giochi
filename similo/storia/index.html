@@ -22,12 +22,11 @@
       margin-top: 20px;
       color: #4a2e1b;
     }
-    /* Contenitore per la selezione iniziale delle carte */
-    #initial-selection-area { /* Modificato il nome del selettore per coerenza con JS */
+    #initial-selection-area {
         display: flex; 
         flex-direction: column;
         align-items: center;
-        padding: 20px; /* Aggiunto padding come per altre sezioni principali */
+        padding: 20px;
     }
 
     .checkbox-container {
@@ -35,7 +34,7 @@
       border-radius: 10px;
       padding: 15px;
       max-width: 1000px;
-      margin: auto; /* Centra il contenitore */
+      margin: auto;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -59,84 +58,85 @@
     }
     .card-grid {
       display: grid;
-      /* grid-template-columns gestito da JS o da ID specifici */
       gap: 20px;
       justify-items: center;
       margin-top: 20px;
       max-width: 1000px; 
       margin-left: auto;
       margin-right: auto;
-      padding: 20px; /* Aggiunto padding standard */
+      padding: 20px;
     }
+
+    /* === MODIFICHE PRINCIPALI PER NUOVO STILE CARTA === */
     .card {
-      width: 150px;
-      height: 200px;
+      width: 150px;       /* Mantenuta larghezza per consistenza layout */
+      height: 250px;      /* NUOVA ALTEZZA per adattarsi all'immagine 180x295 */
       position: relative;
       border: 2px solid #ccc;
       border-radius: 10px;
-      overflow: hidden; /* Nasconde parti dell'immagine se non precise */
+      overflow: hidden;
       cursor: pointer;
-      background-color: white; /* Sfondo bianco di default */
+      background-color: white;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
+      /* display: flex; non più necessario qui */
     }
     .card img {
       width: 100%;
-      height: 150px; /* Altezza fissa per l'immagine */
-      object-fit: cover; /* Assicura che l'immagine copra l'area senza distorsioni */
-      border-bottom: 1px solid #eee; /* Leggera separazione dal testo */
+      height: 100%;      /* L'immagine ora occupa tutta la carta */
+      object-fit: cover; /* Assicura che l'immagine copra sempre lo spazio */
+      /* border-bottom non più necessario */
     }
     .card p {
-      margin: 0;
-      padding: 5px;
+      /* Stile completamente rivisto per l'overlay */
+      position: absolute;
+      top: 0;
+      left: 0;
+      writing-mode: vertical-rl; /* Testo verticale */
+      transform: rotate(180deg);   /* Ruota il testo per leggerlo dall'alto in basso */
+      
+      background-color: rgba(0, 0, 0, 0.6); /* Sfondo nero semitrasparente */
+      color: white;
       font-weight: bold;
-      background-color: #f8f8f8; /* Sfondo chiaro per il nome della carta */
-      color: #000;
-      flex-grow: 1; 
+      text-transform: uppercase;   /* Testo in maiuscolo come nell'esempio */
+      
+      margin: 0;
+      padding: 15px 8px; /* Spaziatura interna */
+      height: 100%;
+      box-sizing: border-box; /* Padding incluso nell'altezza totale */
+
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9em; /* Leggermente più piccolo per nomi lunghi */
-      overflow-y: auto; 
-      line-height: 1.2;
-      text-align: center; /* Centra il testo del nome */
+      text-align: center;
+      font-size: 1.1em;
+      letter-spacing: 2px; /* Spazio tra le lettere */
     }
-
+    /* === FINE MODIFICHE STILE CARTA === */
+    
     /* === MODIFICHE PER LO STATO .covered === */
     .card.covered {
-      background-color: #4a2e1b !important; /* Sfondo marrone per l'intera carta */
-    }
-
-    .card.covered img {
-      display: none; /* Nasconde l'immagine */
-    }
-
-    .card.covered p {
-      background-color: transparent !important; /* SFONDO DEL PARAGRAFO TRASPARENTE */
-      font-size: 0; /* Nasconde il testo originale del nome */
-      display: flex;
+      background-color: #4a2e1b !important;
+      display: flex; /* Aggiunto per centrare il "???" */
       align-items: center;
       justify-content: center;
-      height: 100%; /* Occupa tutta l'altezza disponibile nella flexbox */
-      color: white; /* Il colore del testo "???" (definito in ::before) sarà bianco */
     }
-
-    .card.covered p::before {
+    .card.covered img,
+    .card.covered p { /* Nasconde sia l'immagine che il nome overlay */
+      display: none;
+    }
+    .card.covered::before { /* Usiamo un pseudo-elemento per mostrare "???" */
       content: "???";
-      font-size: 2.5em; /* Testo "???" più grande e ben visibile */
+      font-size: 3em;
       font-weight: bold;
-      /* color: white; ereditato da .card.covered p */
-      text-align: center; /* Assicura la centratura se p non fosse flex */
-      width: 100%; /* Assicura che prenda tutta la larghezza se p non fosse flex */
+      color: white;
     }
-    /* === FINE MODIFICHE PER LO STATO .covered === */
+    /* === FINE MODIFICHE STATO .covered === */
 
     .win-message {
       font-size: 2rem;
       color: green;
       margin: 20px;
-      display: none; /* Nascosto di default */
+      display: none;
     }
     .button-container {
       margin: 20px;
@@ -157,11 +157,10 @@
       background-color: #7a4c2b;
     }
     button:disabled { 
-      background-color: #ccc !important; /* Grigio per disabilitato, !important per sovrascrivere */
+      background-color: #ccc !important;
       color: #666 !important;
       cursor: not-allowed !important;
     }
-    /* Area per gli indizi */
     #clue-interaction-area {
         display: none; 
         margin-top: 30px;
@@ -197,8 +196,8 @@
         max-width: 850px; 
         margin-left: auto;
         margin-right: auto;
-        padding: 0 20px; /* Aggiunto padding laterale per non far toccare i bordi */
-        min-height: 210px; /* Altezza minima per non far collassare se vuota */
+        padding: 0 20px;
+        min-height: 260px; /* Aggiornato per la nuova altezza delle carte */
     }
     .card .mark {
         position: absolute;
@@ -269,7 +268,7 @@
       { name: "Giulio Cesare", img: "images/giulio_cesare.png" },
       { name: "Napoleone Bonaparte", img: "images/napoleone.jpg" },
       { name: "Giovanna d'Arco", img: "images/giovanna_darco.jpg" },
-      { name: "Personaggio Fittizio 5", img: "images/placeholder.png" }, 
+      { name: "Vincent Van Gogh", img: "images/vincent_vangogh.jpg" }, 
       { name: "Personaggio Fittizio 6", img: "images/placeholder.png" },
       { name: "Personaggio Fittizio 7", img: "images/placeholder.png" },
       { name: "Personaggio Fittizio 8", img: "images/placeholder.png" },
@@ -491,10 +490,9 @@
       
       resetBtn.style.display = "none"; 
       mainTitle.textContent = "Seleziona 12 carte";
-      updateClueCountDisplay(); // Resetta anche il contatore visualizzato
+      updateClueCountDisplay(); 
     });
 
-    // Inizializzazione
     function initGame() {
         initializeCheckboxSelection();
         initialSelectionArea.style.display = "flex"; 
@@ -503,10 +501,10 @@
         mainDisplayContainer.style.display = 'none';
         resetBtn.style.display = 'none';
         winMsg.style.display = 'none';
-        updateClueCountDisplay(); // Imposta il contatore indizi a 0/5
+        updateClueCountDisplay(); 
     }
 
-    initGame(); // Chiama la funzione di inizializzazione
+    initGame(); 
 
   </script>
 </body>
