@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creatore di Mappe Esagonali</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        .section { display: none; }
+        .section.active { display: block; }
+        #mapCanvas, #viewerCanvas { cursor: pointer; }
+
+        /* Stili per il menu pop-up dei terreni */
+        #terrainMenu {
+            position: absolute;
+            display: none;
+            background-color: white;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+        .terrain-menu-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px;
+            border-radius: 8px;
+            transition: transform 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+        .terrain-menu-btn:hover {
+            transform: scale(1.05);
+            background-color: #f5f5f4;
+        }
+        .terrain-color-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+        }
+
+        /* Stili per il messaggio/modale */
+        #messageBox, #confirmBox, #randomGenBox {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            z-index: 50; /* Base z-index for modals */
+            max-width: 400px;
+            text-align: center;
+            display: none;
+        }
+        /* Assicuriamo che la finestra di messaggio sia sempre sopra le altre */
+        #messageBox {
+            z-index: 60; 
+        }
+        .input-group {
+            margin-bottom: 12px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.875rem;
+            text-align: left;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="bg-stone-100 text-stone-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="bg-white rounded-xl shadow-md p-4 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <h1 class="text-2xl md:text-3xl font-bold text-orange-500">HexWorld Builder</h1>
+                <nav class="mt-4 md:mt-0">
+                    <a href="#home-section" class="nav-link text-stone-600 hover:text-orange-500 transition-colors duration-300">
+                        <!-- Icona a forma di casa in SVG -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <!-- Sezione Home -->
+            <section id="home-section" class="section active text-center bg-white p-8 rounded-xl shadow-md">
+                <h2 class="text-4xl font-bold mb-4">Costruisci il tuo mondo esagonale</h2>
+                <p class="text-lg text-stone-600 max-w-3xl mx-auto mb-8">
+                    Crea, esplora e condividi le tue mappe esagonali. Che tu stia progettando un gioco da tavolo, una campagna di gioco di ruolo o semplicemente creando un mondo fantastico, i nostri strumenti interattivi ti aiuteranno a dare vita alla tua visione.
+                </p>
+                <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+                    <button id="goToCreatorBtn" class="w-full md:w-auto bg-orange-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-orange-600 transition-transform hover:scale-105 shadow-lg">Inizia a creare la tua mappa</button>
+                    <label for="loadMapInputHome" class="w-full md:w-auto bg-sky-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-sky-600 transition-transform hover:scale-105 shadow-lg cursor-pointer">
+                        <span>Carica una mappa esistente</span>
+                        <input type="file" id="loadMapInputHome" class="hidden" accept=".json">
+                    </label>
+                    <!-- Nuovo pulsante per la sezione Informazioni -->
+                    <button id="goToInfoBtn" class="w-full md:w-auto bg-stone-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-stone-600 transition-transform hover:scale-105 shadow-lg">Informazioni</button>
+                </div>
+            </section>
+
+            <!-- Sezione Crea Mappa -->
+            <section id="creator-section" class="section">
+                <h2 class="text-2xl font-bold mb-4 text-orange-500">Crea Mappa</h2>
+                
+                <div id="config-panel" class="bg-white p-6 rounded-xl shadow-md mb-6">
+                    <h4 class="text-lg font-semibold mb-2">1. Configura la Mappa</h4>
+                    <div class="space-y-4">
+                        <!-- Nuovo campo per il nome della mappa -->
+                        <div>
+                            <label for="mapName" class="block text-sm font-medium text-stone-700">Nome Mappa</label>
+                            <input type="text" id="mapName" placeholder="Inserisci un nome per la tua mappa" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm p-2">
+                        </div>
+                        <div>
+                            <label for="mapWidth" class="block text-sm font-medium text-stone-700">Larghezza (in esagoni)</label>
+                            <input type="number" id="mapWidth" value="20" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm p-2">
+                        </div>
+                        <div>
+                            <label for="mapHeight" class="block text-sm font-medium text-stone-700">Altezza (in esagoni)</label>
+                            <input type="number" id="mapHeight" value="15" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm p-2">
+                        </div>
+                        <button id="generateMapBtn" disabled class="w-full bg-orange-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-orange-600 transition-transform hover:scale-105 disabled:bg-orange-300 disabled:cursor-not-allowed">Genera Mappa</button>
+                        <button id="generateRandomMapBtn" disabled class="w-full bg-orange-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-orange-600 transition-transform hover:scale-105 disabled:bg-orange-300 disabled:cursor-not-allowed">Genera Mappa Casuale</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-2 rounded-xl shadow-md flex flex-col items-center relative">
+                    <canvas id="mapCanvas"></canvas>
+                    <div id="actions-panel" class="hidden flex justify-center space-x-4 mt-4">
+                        <button id="saveMapBtn" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-transform hover:scale-105">Scarica mappa</button>
+                        <button id="clearMapBtn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition-transform hover:scale-105">Cancella Mappa</button>
+                    </div>
+                    <div id="terrainMenu" class="grid grid-cols-2 gap-2">
+                        <button class="terrain-menu-btn" data-terrain="plain">
+                            <div class="terrain-color-box bg-green-300"></div>
+                            <span class="text-xs font-semibold">Pianura</span>
+                        </button>
+                        <button class="terrain-menu-btn" data-terrain="hill">
+                            <div class="terrain-color-box bg-yellow-600"></div>
+                            <span class="text-xs font-semibold">Collina</span>
+                        </button>
+                        <button class="terrain-menu-btn" data-terrain="forest">
+                            <div class="terrain-color-box bg-green-700"></div>
+                            <span class="text-xs font-semibold">Foresta</span>
+                        </button>
+                        <button class="terrain-menu-btn" data-terrain="water">
+                            <div class="terrain-color-box bg-blue-400"></div>
+                            <span class="text-xs font-semibold">Acqua</span>
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Sezione Visualizzazione -->
+            <section id="viewer-section" class="section">
+                 <div class="bg-white p-4 rounded-xl shadow-md mb-4 text-center">
+                    <h3 class="text-2xl font-bold">Modalità Esplorazione</h3>
+                    <p class="text-stone-600">Clicca sugli esagoni scuri per rivelare il terreno sottostante. Le prime e le ultime due righe sono già visibili.</p>
+                </div>
+                <!-- Aggiunto il pulsante per mostrare i numeri -->
+                <div class="flex justify-center mb-4">
+                    <button id="toggleNumbersBtn" class="bg-orange-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors">Mostra Numeri Esagono</button>
+                </div>
+                <div class="bg-white p-2 rounded-xl shadow-md flex justify-center items-center min-h-[70vh]">
+                    <canvas id="viewerCanvas"></canvas>
+                </div>
+            </section>
+
+            <!-- Sezione Informazioni -->
+            <section id="info-section" class="section bg-white p-8 rounded-xl shadow-md">
+                <h2 class="text-3xl font-bold mb-6 border-b pb-3">Informazioni sul Progetto</h2>
+                <div class="space-y-6 text-stone-700">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2 text-orange-600">Chi siamo</h3>
+                        <p>Questo progetto è stato creato con la passione per il gioco e la mappatura. Il nostro obiettivo è offrire uno strumento semplice ma potente per tutti coloro che amano costruire mondi esagonali.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2 text-orange-600">Come funziona</h3>
+                        <p>Utilizza la sezione 'Crea Mappa' per impostare le dimensioni e dipingere il terreno. Salva la tua mappa in locale e, in un secondo momento, caricala per visualizzarla in modalità 'esplorazione'. In questa modalità, solo le aree che scopri saranno visibili!</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2 text-orange-600">Tipi di terreno</h3>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li><b class="text-green-600">Pianura:</b> Terreno base, facile da attraversare.</li>
+                            <li><b class="text-yellow-700">Collina:</b> Terreno che offre una buona visuale, ma che rallenta il movimento.</li>
+                            <li><b class="text-green-800">Foresta:</b> Difficile da attraversare, offre copertura e può nascondere insidie.</li>
+                            <li><b class="text-blue-500">Acqua:</b> Invalicabile se non con mezzi specifici (es. barche).</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Contenitori per messaggi e conferme personalizzati -->
+        <div id="messageBox" class="flex flex-col items-center">
+            <p id="messageText" class="text-lg font-semibold mb-4"></p>
+            <button id="messageOkBtn" class="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors">OK</button>
+        </div>
+        
+        <div id="confirmBox" class="flex flex-col items-center">
+            <p id="confirmText" class="text-lg font-semibold mb-4"></p>
+            <div class="flex space-x-4">
+                <button id="confirmYesBtn" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">Sì</button>
+                <button id="confirmNoBtn" class="bg-stone-500 text-white px-6 py-2 rounded-lg hover:bg-stone-600 transition-colors">No</button>
+            </div>
+        </div>
+
+        <!-- Nuovo contenitore per la generazione casuale -->
+        <div id="randomGenBox" class="flex flex-col items-start p-6">
+            <h4 class="text-lg font-semibold mb-4 w-full text-center">Imposta Terreni Casuali</h4>
+            <div class="input-group">
+                <label for="randomHillsInput" class="text-stone-700">Esagoni Collina:</label>
+                <input type="number" id="randomHillsInput" min="0" value="0">
+            </div>
+            <div class="input-group">
+                <label for="randomForestsInput" class="text-stone-700">Esagoni Foresta:</label>
+                <input type="number" id="randomForestsInput" min="0" value="0">
+            </div>
+            <div class="input-group">
+                <label for="randomWaterInput" class="text-stone-700">Esagoni Acqua:</label>
+                <input type="number" id="randomWaterInput" min="0" value="0">
+            </div>
+            <div class="flex space-x-4 mt-4 w-full">
+                <button id="randomGenerateBtn" class="w-full bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors">Genera</button>
+                <button id="randomCancelBtn" class="w-full bg-stone-500 text-white px-6 py-2 rounded-lg hover:bg-stone-600 transition-colors">Annulla</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const goToCreatorBtn = document.getElementById('goToCreatorBtn');
+            const goToInfoBtn = document.getElementById('goToInfoBtn'); 
+            const loadMapInputHome = document.getElementById('loadMapInputHome');
+
+            const mapNameInput = document.getElementById('mapName');
+            const mapWidthInput = document.getElementById('mapWidth');
+            const mapHeightInput = document.getElementById('mapHeight');
+            const generateMapBtn = document.getElementById('generateMapBtn');
+            const generateRandomMapBtn = document.getElementById('generateRandomMapBtn');
+            const saveMapBtn = document.getElementById('saveMapBtn');
+            const clearMapBtn = document.getElementById('clearMapBtn');
+            
+            const configPanel = document.getElementById('config-panel');
+            const actionsPanel = document.getElementById('actions-panel');
+
+            const canvas = document.getElementById('mapCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            const viewerCanvas = document.getElementById('viewerCanvas');
+            const viewerCtx = viewerCanvas.getContext('2d');
+            const toggleNumbersBtn = document.getElementById('toggleNumbersBtn');
+            let showNumbers = false; // Stato per mostrare/nascondere i numeri
+            
+            const terrainMenu = document.getElementById('terrainMenu');
+            
+            // Elementi per messaggi e conferme personalizzati
+            const messageBox = document.getElementById('messageBox');
+            const messageText = document.getElementById('messageText');
+            const messageOkBtn = document.getElementById('messageOkBtn');
+            const confirmBox = document.getElementById('confirmBox');
+            const confirmText = document.getElementById('confirmText');
+            const confirmYesBtn = document.getElementById('confirmYesBtn');
+            const confirmNoBtn = document.getElementById('confirmNoBtn');
+            const randomGenBox = document.getElementById('randomGenBox');
+            const randomHillsInput = document.getElementById('randomHillsInput');
+            const randomForestsInput = document.getElementById('randomForestsInput');
+            const randomWaterInput = document.getElementById('randomWaterInput');
+            const randomGenerateBtn = document.getElementById('randomGenerateBtn');
+            const randomCancelBtn = document.getElementById('randomCancelBtn');
+
+
+            let mapData = { width: 0, height: 0, hexes: [] };
+            let hexSize = 25;
+            let selectedHex = null; // Memorizza l'esagono su cui si è cliccato
+
+            const terrainColors = {
+                plain: '#a7c957',
+                hill: '#bc6c25',
+                forest: '#283618',
+                water: '#60a5fa'
+            };
+            
+            // Funzioni per messaggi e conferme personalizzati
+            function showMessage(message) {
+                messageText.textContent = message;
+                messageBox.style.display = 'flex';
+            }
+
+            function showConfirm(message, callback) {
+                confirmText.textContent = message;
+                confirmBox.style.display = 'flex';
+                confirmYesBtn.onclick = () => {
+                    confirmBox.style.display = 'none';
+                    callback(true);
+                };
+                confirmNoBtn.onclick = () => {
+                    confirmBox.style.display = 'none';
+                    callback(false);
+                };
+            }
+            
+            messageOkBtn.addEventListener('click', () => {
+                messageBox.style.display = 'none';
+            });
+
+            function showSection(id) {
+                sections.forEach(section => {
+                    if (section.id === id) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Il problema era qui, e.target può essere la SVG. Usiamo closest('a') per assicurarci di avere il link
+                    const targetLink = e.target.closest('a');
+                    const id = targetLink.getAttribute('href').substring(1);
+                    showSection(id);
+                });
+            });
+
+            goToCreatorBtn.addEventListener('click', () => showSection('creator-section'));
+            goToInfoBtn.addEventListener('click', () => showSection('info-section')); 
+            
+            loadMapInputHome.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    loadMap(file, true);
+                }
+            });
+
+            function getHexParameters() {
+                const hexWidth = hexSize * 2;
+                const hexHeight = Math.sqrt(3) * hexSize;
+                const horizDist = hexWidth * 3 / 4;
+                return { hexWidth, hexHeight, horizDist };
+            }
+
+            function drawGrid(context, targetCanvas, data, isViewer = false) {
+                const { hexWidth, hexHeight, horizDist } = getHexParameters();
+                
+                const paddingX = hexWidth * 0.5;
+                const paddingY = hexHeight * 0.75;
+
+                const canvasWidth = data.width * horizDist + paddingX * 2;
+                const canvasHeight = data.height * hexHeight + paddingY * 2;
+
+                targetCanvas.width = canvasWidth;
+                targetCanvas.height = canvasHeight;
+                
+                context.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+
+                data.hexes.forEach(hex => {
+                    const offsetY = (hex.x % 2) * hexHeight / 2;
+                    const centerX = paddingX + hex.x * horizDist + hexWidth / 2;
+                    const centerY = paddingY + hex.y * hexHeight + offsetY + hexHeight / 2;
+                    
+                    context.beginPath();
+                    for (let i = 0; i < 6; i++) {
+                        const angle_deg = 60 * i; 
+                        const angle_rad = Math.PI / 180 * angle_deg;
+                        context.lineTo(centerX + hexSize * Math.cos(angle_rad), centerY + hexSize * Math.sin(angle_rad));
+                    }
+                    context.closePath();
+                    
+                    if (isViewer && !hex.isExplored) {
+                        context.fillStyle = '#000';
+                        context.strokeStyle = '#fff';
+                    } else {
+                        context.fillStyle = terrainColors[hex.type];
+                        context.strokeStyle = '#a1a1aa';
+                    }
+                    
+                    context.fill();
+                    context.lineWidth = 1;
+                    context.stroke();
+
+                    // Disegna le coordinate se l'opzione è attiva
+                    if (isViewer && showNumbers) {
+                        context.fillStyle = '#fff'; // Colore del testo
+                        context.font = '10px Arial';
+                        context.textAlign = 'center';
+                        context.textBaseline = 'middle';
+                        context.fillText(`${hex.x + 1}-${hex.y + 1}`, centerX, centerY);
+                    }
+                });
+            }
+            
+            function generateNewMap() {
+                const width = parseInt(mapWidthInput.value);
+                const height = parseInt(mapHeightInput.value);
+                if (width <= 0 || height <= 0 || isNaN(width) || isNaN(height)) {
+                    showMessage('Dimensioni non valide. Inserisci numeri interi positivi.');
+                    return;
+                }
+                mapData.width = width;
+                mapData.height = height;
+                mapData.hexes = [];
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        mapData.hexes.push({ x, y, type: 'plain' });
+                    }
+                }
+                drawGrid(ctx, canvas, mapData);
+                configPanel.style.display = 'none';
+                actionsPanel.style.display = 'flex';
+            }
+
+            // Funzione per validare l'input del nome e abilitare/disabilitare i pulsanti
+            function validateMapName() {
+                if (mapNameInput.value.trim() !== '') {
+                    generateMapBtn.disabled = false;
+                    generateMapBtn.classList.remove('disabled:bg-orange-300', 'disabled:cursor-not-allowed');
+                    generateRandomMapBtn.disabled = false;
+                    generateRandomMapBtn.classList.remove('disabled:bg-orange-300', 'disabled:cursor-not-allowed');
+                } else {
+                    generateMapBtn.disabled = true;
+                    generateMapBtn.classList.add('disabled:bg-orange-300', 'disabled:cursor-not-allowed');
+                    generateRandomMapBtn.disabled = true;
+                    generateRandomMapBtn.classList.add('disabled:bg-orange-300', 'disabled:cursor-not-allowed');
+                }
+            }
+
+            // Aggiungi un listener per l'input del nome della mappa
+            mapNameInput.addEventListener('input', validateMapName);
+            // Esegui la validazione iniziale al caricamento della pagina
+            validateMapName();
+
+            generateMapBtn.addEventListener('click', generateNewMap);
+            
+            generateRandomMapBtn.addEventListener('click', () => {
+                randomGenBox.style.display = 'flex';
+            });
+            randomCancelBtn.addEventListener('click', () => {
+                randomGenBox.style.display = 'none';
+            });
+
+            randomGenerateBtn.addEventListener('click', () => {
+                const width = parseInt(mapWidthInput.value);
+                const height = parseInt(mapHeightInput.value);
+                
+                // Calcola il numero di esagoni disponibili per la generazione casuale (escludendo la prima e l'ultima colonna)
+                const randomGenWidth = Math.max(0, width - 2);
+                const randomHexTotal = randomGenWidth * height;
+
+                const hills = parseInt(randomHillsInput.value) || 0;
+                const forests = parseInt(randomForestsInput.value) || 0;
+                const water = parseInt(randomWaterInput.value) || 0;
+
+                if (width <= 0 || height <= 0 || isNaN(width) || isNaN(height)) {
+                    showMessage('Dimensioni non valide. Inserisci numeri interi positivi.');
+                    return;
+                }
+                
+                const sumRequested = hills + forests + water;
+                if (sumRequested > randomHexTotal) {
+                    showMessage(`Il numero totale di esagoni richiesti (${sumRequested}) supera il totale disponibile per la generazione casuale (${randomHexTotal}).`);
+                    return;
+                }
+                
+                randomGenBox.style.display = 'none';
+
+                // Genera una lista di tipi di terreno per le colonne centrali
+                const terrainTypes = [];
+                for (let i = 0; i < hills; i++) terrainTypes.push('hill');
+                for (let i = 0; i < forests; i++) terrainTypes.push('forest');
+                for (let i = 0; i < water; i++) terrainTypes.push('water');
+                
+                // Riempi il resto con la pianura per le colonne centrali
+                while (terrainTypes.length < randomHexTotal) {
+                    terrainTypes.push('plain');
+                }
+                
+                // Algoritmo di Fisher-Yates per mescolare l'array
+                for (let i = terrainTypes.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [terrainTypes[i], terrainTypes[j]] = [terrainTypes[j], terrainTypes[i]];
+                }
+                
+                // Crea la mappa
+                mapData.width = width;
+                mapData.height = height;
+                mapData.hexes = [];
+                let terrainIndex = 0;
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        if (x === 0 || x === width - 1) {
+                            // Le colonne esterne sono sempre pianura
+                            mapData.hexes.push({ x, y, type: 'plain' });
+                        } else {
+                            // Le colonne centrali sono assegnate casualmente
+                            mapData.hexes.push({ x, y, type: terrainTypes[terrainIndex] });
+                            terrainIndex++;
+                        }
+                    }
+                }
+                
+                // Scarica la mappa
+                const dataStr = JSON.stringify(mapData);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                const mapName = mapNameInput.value.trim() !== '' ? mapNameInput.value.trim() : 'mappa_casuale';
+                const exportFileDefaultName = `${mapName.replace(/\s+/g, '_')}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                showMessage('Mappa casuale generata e scaricata con successo!');
+            });
+            
+            function getHexAtPoint(pX, pY) {
+                const { hexWidth, hexHeight, horizDist } = getHexParameters();
+                const paddingX = hexWidth * 0.5;
+                const paddingY = hexHeight * 0.75;
+                
+                let minDistanceSq = Infinity;
+                let closestHex = null;
+
+                mapData.hexes.forEach(hex => {
+                    const offsetY = (hex.x % 2) * hexHeight / 2;
+                    const centerX = paddingX + hex.x * horizDist + hexWidth / 2;
+                    const centerY = paddingY + hex.y * hexHeight + offsetY + hexHeight / 2;
+                    
+                    const distanceSq = Math.pow(pX - centerX, 2) + Math.pow(pY - centerY, 2);
+                    
+                    if (distanceSq < minDistanceSq) {
+                        minDistanceSq = distanceSq;
+                        closestHex = hex;
+                    }
+                });
+
+                // Controllo aggiuntivo per assicurarsi che il clic sia all'interno del raggio dell'esagono
+                if (closestHex && Math.sqrt(minDistanceSq) <= hexSize) {
+                    return closestHex;
+                }
+                
+                return null;
+            }
+
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const hex = getHexAtPoint(x, y);
+                if (hex) {
+                    selectedHex = hex;
+                    // Posiziona e mostra il menu
+                    terrainMenu.style.display = 'grid';
+                    terrainMenu.style.left = `${e.clientX - rect.left + 15}px`;
+                    terrainMenu.style.top = `${e.clientY - rect.top + 15}px`;
+                } else {
+                    terrainMenu.style.display = 'none';
+                }
+            });
+            
+            // Gestione dei click sul menu del terreno
+            terrainMenu.addEventListener('click', (e) => {
+                const terrainButton = e.target.closest('.terrain-menu-btn');
+                if (terrainButton && selectedHex) {
+                    const terrainType = terrainButton.dataset.terrain;
+                    selectedHex.type = terrainType;
+                    drawGrid(ctx, canvas, mapData);
+                    terrainMenu.style.display = 'none';
+                }
+            });
+
+            // Nasconde il menu se si clicca fuori dal canvas
+            document.addEventListener('click', (e) => {
+                if (!canvas.contains(e.target) && !terrainMenu.contains(e.target) && terrainMenu.style.display === 'grid') {
+                    terrainMenu.style.display = 'none';
+                }
+            });
+
+            clearMapBtn.addEventListener('click', () => {
+                showConfirm('Sei sicuro di voler cancellare tutta la mappa?', (result) => {
+                    if (result) {
+                        // Resetta l'oggetto mapData
+                        mapData = { width: 0, height: 0, hexes: [] };
+                        // Svuota il canvas
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        // Nasconde il pannello delle azioni e mostra quello di configurazione
+                        actionsPanel.style.display = 'none';
+                        configPanel.style.display = 'block';
+                    }
+                });
+            });
+
+            saveMapBtn.addEventListener('click', () => {
+                const dataStr = JSON.stringify(mapData);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                // Usa il nome della mappa dall'input, con un fallback se vuoto
+                const mapName = mapNameInput.value.trim() !== '' ? mapNameInput.value.trim() : 'mia_mappa';
+                const exportFileDefaultName = `${mapName.replace(/\s+/g, '_')}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+            });
+
+            function loadMap(file, showViewer) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const loadedData = JSON.parse(e.target.result);
+                        if (loadedData.width && loadedData.height && loadedData.hexes) {
+                            if (showViewer) {
+                                loadedData.hexes.forEach(hex => {
+                                    hex.isExplored = hex.x < 2 || hex.x >= loadedData.width - 2;
+                                });
+                                mapData = loadedData;
+                                drawGrid(viewerCtx, viewerCanvas, mapData, true);
+                                showSection('viewer-section');
+                            } else {
+                                mapData = loadedData;
+                                mapWidthInput.value = mapData.width;
+                                mapHeightInput.value = mapData.height;
+                                drawGrid(ctx, canvas, mapData);
+                                configPanel.style.display = 'none';
+                                actionsPanel.style.display = 'flex';
+                                showSection('creator-section');
+                            }
+                        } else {
+                            showMessage('File mappa non valido. Il formato non è corretto.');
+                        }
+                    } catch (error) {
+                        showMessage('Errore nel leggere il file mappa. Assicurati che sia un file JSON valido.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            viewerCanvas.addEventListener('click', (e) => {
+                const rect = viewerCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const clickedHex = getHexAtPoint(x, y);
+
+                if (clickedHex && !clickedHex.isExplored) {
+                    clickedHex.isExplored = true;
+                    drawGrid(viewerCtx, viewerCanvas, mapData, true);
+                }
+            });
+            
+            toggleNumbersBtn.addEventListener('click', () => {
+                showNumbers = !showNumbers;
+                if (showNumbers) {
+                    toggleNumbersBtn.textContent = 'Nascondi Numeri Esagono';
+                } else {
+                    toggleNumbersBtn.textContent = 'Mostra Numeri Esagono';
+                }
+                drawGrid(viewerCtx, viewerCanvas, mapData, true);
+            });
+            
+            // Inizializzazione
+        });
+    </script>
+</body>
+</html>
