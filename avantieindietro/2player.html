@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avanti e Indietro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 90%;
+            width: 1200px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+        .board-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 30px;
+        }
+        .track {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #e2e8f0;
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+        .track-reverse {
+            flex-direction: row-reverse;
+        }
+        .cell {
+            min-width: 40px;
+            flex-grow: 1;
+            flex-shrink: 1;
+            height: 50px;
+            background-color: #cbd5e1;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            position: relative;
+            text-align: center;
+        }
+        .cell.start {
+            background-color: #38a169;
+            color: #ffffff;
+            min-width: 80px;
+            height: 80px;
+            flex-grow: 0;
+            flex-shrink: 0;
+        }
+        .cell.highlight {
+            background-color: #63b3ed;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(99, 179, 237, 0.7);
+        }
+        .cell.end {
+            background-color: #e53e3e;
+            color: #ffffff;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .piece {
+            width: 40px;
+            height: 40px;
+            background-color: #fff;
+            border: 3px solid #000;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 9999px;
+            font-weight: bold;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .btn-green {
+            background-color: #38a169;
+        }
+        .btn-red {
+            background-color: #e53e3e;
+        }
+        .btn-blue {
+            background-color: #4299e1;
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div id="gameContainer" class="container">
+        
+        <!-- Schermata di configurazione iniziale -->
+        <div id="configScreen" class="screen active">
+            <h1 class="text-3xl font-bold mb-6 text-gray-800">Configura il tuo gioco</h1>
+            <p class="text-gray-600 mb-8">Inserisci il numero di caselle per lato e i nomi delle due squadre.</p>
+            <div class="mb-4">
+                <label for="boardSize" class="block text-gray-700 font-bold mb-2">Numero di caselle per lato:</label>
+                <input type="number" id="boardSize" min="1" max="15" value="9" class="w-full max-w-sm mx-auto p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-center">
+            </div>
+            <div class="mb-4">
+                <label for="team1Name" class="block text-gray-700 font-bold mb-2">Nome Squadra 1:</label>
+                <input type="text" id="team1Name" placeholder="Squadra 1" class="w-full max-w-sm mx-auto p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-8">
+                <label for="team2Name" class="block text-gray-700 font-bold mb-2">Nome Squadra 2:</label>
+                <input type="text" id="team2Name" placeholder="Squadra 2" class="w-full max-w-sm mx-auto p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <button id="startGameBtn" class="btn btn-green">Inizia Gioco</button>
+            <div id="error-message" class="text-red-500 mt-4 hidden">Per favore, inserisci un numero di caselle valido (1-15) e i nomi di entrambe le squadre.</div>
+        </div>
+
+        <!-- Schermata di gioco -->
+        <div id="gameScreen" class="screen">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Avanti e Indietro</h2>
+            <div class="board-container">
+                <!-- Il tabellone verrà generato qui -->
+            </div>
+            <div class="button-group flex justify-center gap-20">
+                <!-- Team 1 Controls -->
+                <div class="flex flex-col items-center">
+                    <h3 id="team1Display" class="text-xl font-bold text-gray-800 mb-2"></h3>
+                    <button id="moveBtn1" class="btn btn-green"></button>
+                </div>
+                <!-- Team 2 Controls -->
+                <div class="flex flex-col items-center">
+                    <h3 id="team2Display" class="text-xl font-bold text-gray-800 mb-2"></h3>
+                    <button id="moveBtn2" class="btn btn-red"></button>
+                </div>
+            </div>
+            <div class="mt-8">
+                <button id="resetGameBtn" class="btn btn-blue">Ricominciamo</button>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Modal per la vittoria -->
+    <div id="winModal" class="modal-overlay hidden">
+        <div class="modal-content relative">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Gioco Terminato! 🎉</h2>
+            <p id="winMessage" class="text-xl text-gray-600 font-semibold mb-6"></p>
+            <button id="modalResetBtn" class="btn btn-blue">Ricominciamo</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // UI elements
+            const configScreen = document.getElementById('configScreen');
+            const gameScreen = document.getElementById('gameScreen');
+            const startGameBtn = document.getElementById('startGameBtn');
+            const boardSizeInput = document.getElementById('boardSize');
+            const team1NameInput = document.getElementById('team1Name');
+            const team2NameInput = document.getElementById('team2Name');
+            const boardContainer = document.querySelector('.board-container');
+            const team1Display = document.getElementById('team1Display');
+            const team2Display = document.getElementById('team2Display');
+            const moveBtn1 = document.getElementById('moveBtn1');
+            const moveBtn2 = document.getElementById('moveBtn2');
+            const resetGameBtn = document.getElementById('resetGameBtn');
+            const errorMessage = document.getElementById('error-message');
+            const winModal = document.getElementById('winModal');
+            const winMessage = document.getElementById('winMessage');
+            const modalResetBtn = document.getElementById('modalResetBtn');
+
+            // Game state
+            let boardSize = 9;
+            let team1Name = '';
+            let team2Name = '';
+            let currentPosition = 0;
+            let gameOver = false;
+
+            // Screen transition
+            function showScreen(screenId) {
+                const screens = document.querySelectorAll('.screen');
+                screens.forEach(screen => screen.classList.remove('active'));
+                document.getElementById(screenId).classList.add('active');
+            }
+
+            // Game initialization
+            function initGame() {
+                team1Name = team1NameInput.value.trim();
+                team2Name = team2NameInput.value.trim();
+                boardSize = parseInt(boardSizeInput.value, 10);
+
+                if (boardSize <= 0 || boardSize > 15 || team1Name === '' || team2Name === '') {
+                    errorMessage.classList.remove('hidden');
+                    return;
+                }
+                errorMessage.classList.add('hidden');
+                
+                currentPosition = 0;
+                gameOver = false;
+                
+                createBoard();
+                updateButtons();
+                showScreen('gameScreen');
+            }
+
+            // Board creation
+            function createBoard() {
+                boardContainer.innerHTML = '';
+                
+                // Track for Team 1 (right)
+                const track1 = document.createElement('div');
+                track1.className = 'track';
+                for (let i = 1; i <= boardSize; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (i === boardSize) {
+                        cell.classList.add('end');
+                        cell.innerHTML = `${i}<br>FINE`;
+                    } else {
+                        cell.textContent = i;
+                    }
+                    cell.dataset.index = -i;
+                    track1.appendChild(cell);
+                }
+
+                // Start cell in the middle
+                const startCell = document.createElement('div');
+                startCell.className = 'cell start';
+                startCell.textContent = 'INIZIO';
+                const piece = document.createElement('div');
+                piece.className = 'piece';
+                startCell.appendChild(piece);
+                
+                // Track for Team 2 (left)
+                const track2 = document.createElement('div');
+                track2.className = 'track track-reverse';
+                for (let i = 1; i <= boardSize; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (i === boardSize) {
+                        cell.classList.add('end');
+                        cell.innerHTML = `${i}<br>FINE`;
+                    } else {
+                        cell.textContent = i;
+                    }
+                    cell.dataset.index = i;
+                    track2.appendChild(cell);
+                }
+                
+                const boardRow = document.createElement('div');
+                boardRow.className = "flex items-center flex-grow-1";
+                boardRow.appendChild(track2);
+                boardRow.appendChild(startCell);
+                boardRow.appendChild(track1);
+                boardContainer.appendChild(boardRow);
+                
+                updatePiecePosition();
+            }
+
+            // Update button text and state
+            function updateButtons() {
+                team1Display.textContent = team1Name;
+                team2Display.textContent = team2Name;
+                moveBtn1.textContent = `Muovi ${team1Name}`;
+                moveBtn2.textContent = `Muovi ${team2Name}`;
+                moveBtn1.disabled = false;
+                moveBtn2.disabled = false;
+            }
+
+            // Update piece position
+            function updatePiecePosition() {
+                const allCells = document.querySelectorAll('.cell');
+                allCells.forEach(cell => cell.classList.remove('highlight'));
+                
+                const piece = document.querySelector('.piece');
+                if (!piece) return;
+
+                if (currentPosition === 0) {
+                    const startCell = document.querySelector('.cell.start');
+                    if (startCell) startCell.appendChild(piece);
+                    return;
+                }
+
+                const targetCell = document.querySelector(`.cell[data-index="${currentPosition}"]`);
+                if (targetCell) {
+                    targetCell.classList.add('highlight');
+                    targetCell.appendChild(piece);
+                }
+            }
+
+            // Move the piece
+            function movePiece(direction) {
+                if (gameOver) return;
+
+                const nextPosition = currentPosition + direction;
+                
+                if (Math.abs(nextPosition) >= boardSize) {
+                    currentPosition = (direction > 0) ? boardSize : -boardSize;
+                    endGame();
+                } else {
+                    currentPosition = nextPosition;
+                }
+                
+                updatePiecePosition();
+            }
+
+            // End game
+            function endGame() {
+                gameOver = true;
+                const winningTeam = currentPosition > 0 ? team1Name : team2Name;
+                winMessage.textContent = `Complimenti, la squadra ${winningTeam} ha vinto! 🥳`;
+                winModal.classList.remove('hidden');
+                winModal.classList.add('active');
+                moveBtn1.disabled = true;
+                moveBtn2.disabled = true;
+            }
+
+            // Close modal and reset to config screen
+            function resetGame() {
+                winModal.classList.add('hidden');
+                winModal.classList.remove('active');
+                showScreen('configScreen');
+            }
+
+            // Event listeners
+            startGameBtn.addEventListener('click', initGame);
+            resetGameBtn.addEventListener('click', resetGame);
+            modalResetBtn.addEventListener('click', resetGame);
+            moveBtn1.addEventListener('click', () => movePiece(1));
+            moveBtn2.addEventListener('click', () => movePiece(-1));
+            
+        });
+    </script>
+</body>
+</html>
