@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avanti e Indietro - 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        #configScreen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        #gameScreen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            width: 100%;
+            min-height: 0;
+        }
+
+        .grid-and-controls {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            flex-grow: 1;
+            width: 100%;
+            min-height: 0;
+        }
+        
+        .grid-container-wrapper { 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+            min-width: 0;
+            min-height: 0;
+        }
+        
+        .grid-container {
+            display: grid;
+            gap: 4px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .cell {
+            background-color: #cbd5e1;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: clamp(0.5rem, 0.7vw, 0.8rem);
+        }
+
+        .cell.start {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .cell.highlight {
+            background-color: #63b3ed;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(99, 179, 237, 0.7);
+        }
+
+        .cell.corner-cell { background-color: #ffffff; }
+
+        .piece {
+            height: 80%;
+            max-width: 80%;
+            aspect-ratio: 1 / 1;
+            background-color: #fff;
+            border: 3px solid #000;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .button-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .button-group-rotated { transform-origin: center; }
+        .button-group-left { transform: rotate(-90deg); }
+        .button-group-right { transform: rotate(90deg); }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-slate { background-color: #64748b; }
+        
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 20; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0s 0.3s;
+        }
+        .modal-overlay.active { 
+            opacity: 1; 
+            visibility: visible;
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            background-color: #ffffff; padding: 2rem; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center; transform: scale(0.9);
+            transition: transform 0.3s ease;
+            max-width: 90%;
+            width: 500px;
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+
+        /* Stili per il selettore di colori */
+        .color-picker {
+            position: relative;
+        }
+        .color-swatch {
+            width: 1.75rem; /* 28px */
+            height: 1.75rem; /* 28px */
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+        .color-swatch.bg-white {
+            border-color: #d1d5db; /* gray-300 */
+        }
+        .color-dropdown {
+            position: absolute;
+            z-index: 30;
+            top: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 0.5rem;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer" class="container">
+        
+        <div id="configScreen" class="screen active">
+            <div class="w-full max-w-4xl mx-auto text-center">
+                <h1 class="text-3xl font-bold mb-4 text-gray-800">Imposta la partita</h1>
+        
+                <div class="space-y-4">
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-3">Dimensione della griglia</h2>
+                        <div class="max-w-xs mx-auto">
+                            <label for="boardSize" class="block text-gray-600 font-medium mb-1">Numero di caselle per squadra</label>
+                            <input type="number" id="boardSize" min="1" max="19" value="5" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-lg">
+                            <p class="text-xs text-gray-500 mt-1">Es: con 5 si crea una griglia 11x11.</p>
+                        </div>
+                    </div>
+        
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">Squadre</h2>
+                        <div id="teamsConfigContainer" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 max-w-3xl mx-auto">
+                            <!-- Team config boxes will be generated by JS -->
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="mt-6">
+                    <button id="startGameBtn" class="bg-green-600 text-white btn text-lg px-6 py-2 transform hover:scale-105">Inizia il gioco</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="screen">
+            <div class="game-area">
+                <div id="topControls" class="my-2"></div>
+                <div class="grid-and-controls">
+                    <div id="leftControls" class="flex items-center mx-2"></div>
+                    <div class="grid-container-wrapper">
+                        <div id="boardContainer" class="grid-container"></div>
+                    </div>
+                    <div id="rightControls" class="flex items-center mx-2"></div>
+                </div>
+                <div id="bottomControls" class="my-2"></div>
+            </div>
+            <div class="mt-auto pt-2 flex justify-center">
+                <button id="endGameBtn" class="btn btn-slate">Termina partita</button>
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="winModal" class="modal-overlay">
+        <div class="modal-content relative">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Gioco terminato! 🎉</h2>
+            <p id="winMessage" class="text-xl text-gray-600 font-semibold mb-6"></p>
+            <button id="modalResetBtn" class="btn bg-blue-500">Ricominciamo</button>
+        </div>
+    </div>
+
+    <div id="errorModal" class="modal-overlay">
+        <div class="modal-content relative">
+            <h2 class="text-2xl font-bold text-red-600 mb-4">Attenzione!</h2>
+            <p id="errorMessageContent" class="text-lg text-gray-700 mb-6"></p>
+            <button id="errorModalOkBtn" class="btn bg-red-500">OK</button>
+        </div>
+    </div>
+    
+    <div id="leaderboardModal" class="modal-overlay">
+        <div class="modal-content relative">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Classifica finale 🏆</h2>
+            <div id="leaderboardContent" class="space-y-3 text-left"></div>
+            <button id="leaderboardResetBtn" class="btn bg-blue-500 mt-6">Gioca ancora</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startGameBtn = document.getElementById('startGameBtn');
+            const boardSizeInput = document.getElementById('boardSize');
+            const teamsConfigContainer = document.getElementById('teamsConfigContainer');
+            
+            const boardContainer = document.getElementById('boardContainer');
+            const topControls = document.getElementById('topControls');
+            const bottomControls = document.getElementById('bottomControls');
+            const leftControls = document.getElementById('leftControls');
+            const rightControls = document.getElementById('rightControls');
+            const endGameBtn = document.getElementById('endGameBtn');
+            
+            const winModal = document.getElementById('winModal');
+            const winMessage = document.getElementById('winMessage');
+            const modalResetBtn = document.getElementById('modalResetBtn');
+
+            const errorModal = document.getElementById('errorModal');
+            const errorMessageContent = document.getElementById('errorMessageContent');
+            const errorModalOkBtn = document.getElementById('errorModalOkBtn');
+
+            const leaderboardModal = document.getElementById('leaderboardModal');
+            const leaderboardContent = document.getElementById('leaderboardContent');
+            const leaderboardResetBtn = document.getElementById('leaderboardResetBtn');
+
+            const colorPalette = [
+                { name: 'green', value: 'bg-green-500', border: 'bg-green-200', text: 'text-green-800', borderClass: 'border-green-400', bgLight: 'bg-green-50', btnText: 'text-white'},
+                { name: 'red', value: 'bg-red-500', border: 'bg-red-200', text: 'text-red-800', borderClass: 'border-red-400', bgLight: 'bg-red-50', btnText: 'text-white'},
+                { name: 'purple', value: 'bg-purple-500', border: 'bg-purple-200', text: 'text-purple-800', borderClass: 'border-purple-400', bgLight: 'bg-purple-50', btnText: 'text-white'},
+                { name: 'amber', value: 'bg-amber-400', border: 'bg-amber-200', text: 'text-amber-800', borderClass: 'border-amber-400', bgLight: 'bg-amber-50', btnText: 'text-white'},
+                { name: 'blue', value: 'bg-blue-500', border: 'bg-blue-200', text: 'text-blue-800', borderClass: 'border-blue-400', bgLight: 'bg-blue-50', btnText: 'text-white'},
+                { name: 'pink', value: 'bg-pink-500', border: 'bg-pink-200', text: 'text-pink-800', borderClass: 'border-pink-400', bgLight: 'bg-pink-50', btnText: 'text-white'},
+                { name: 'cyan', value: 'bg-cyan-500', border: 'bg-cyan-200', text: 'text-cyan-800', borderClass: 'border-cyan-400', bgLight: 'bg-cyan-50', btnText: 'text-white'},
+                { name: 'teal', value: 'bg-teal-500', border: 'bg-teal-200', text: 'text-teal-800', borderClass: 'border-teal-400', bgLight: 'bg-teal-50', btnText: 'text-white'},
+                { name: 'black', value: 'bg-gray-800', border: 'bg-gray-400', text: 'text-gray-800', borderClass: 'border-gray-500', bgLight: 'bg-gray-100', btnText: 'text-white'},
+                { name: 'orange', value: 'bg-orange-500', border: 'bg-orange-200', text: 'text-orange-800', borderClass: 'border-orange-400', bgLight: 'bg-orange-50', btnText: 'text-white'},
+                { name: 'brown', value: 'bg-amber-800', border: 'bg-amber-600', text: 'text-amber-800', borderClass: 'border-amber-600', bgLight: 'bg-amber-100', btnText: 'text-white'},
+                { name: 'white', value: 'bg-white', border: 'bg-gray-400', text: 'text-gray-800', borderClass: 'border-gray-400', bgLight: 'bg-gray-50', btnText: 'text-gray-800'}
+            ];
+
+            let selectedColors = [null, null, null, null];
+            let teamNames = [];
+            let teamColors = [];
+
+            let boardSize;
+            let currentX, currentY;
+            let gameOver = false;
+            let passiTotali = [0, 0, 0, 0];
+
+            function renderConfigScreen() {
+                teamsConfigContainer.innerHTML = '';
+                const teamLabels = ['Squadra 1', 'Squadra 2', 'Squadra 3', 'Squadra 4'];
+                
+                teamLabels.forEach((label, index) => {
+                    const teamDiv = document.createElement('div');
+                    teamDiv.className = 'space-y-2 relative';
+
+                    const labelEl = document.createElement('label');
+                    labelEl.className = 'block text-sm text-gray-600 font-medium mb-1';
+                    labelEl.textContent = label;
+                    
+                    const inputWrapper = document.createElement('div');
+                    inputWrapper.className = 'relative w-full';
+
+                    const nameInput = document.createElement('input');
+                    nameInput.type = 'text';
+                    nameInput.id = `teamName${index}`;
+                    nameInput.placeholder = 'Inserisci nome...';
+                    nameInput.className = 'w-full p-2 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center';
+
+                    const colorPickerDiv = document.createElement('div');
+                    colorPickerDiv.className = 'color-picker absolute left-2 top-1/2 -translate-y-1/2';
+
+                    const colorSwatch = document.createElement('div');
+                    colorSwatch.id = `color-swatch-${index}`;
+                    colorSwatch.className = 'color-swatch bg-gray-200';
+                    
+                    const colorDropdown = document.createElement('div');
+                    colorDropdown.id = `color-dropdown-${index}`;
+                    colorDropdown.className = 'color-dropdown hidden';
+
+                    colorPickerDiv.append(colorSwatch, colorDropdown);
+                    inputWrapper.append(colorPickerDiv, nameInput);
+                    teamDiv.append(labelEl, inputWrapper);
+                    teamsConfigContainer.appendChild(teamDiv);
+
+                    colorSwatch.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const wasHidden = colorDropdown.classList.contains('hidden');
+
+                        document.querySelectorAll('.color-dropdown').forEach((el, elIndex) => {
+                            if (elIndex !== index) {
+                                el.classList.add('hidden');
+                                el.closest('.space-y-2').classList.remove('z-20');
+                            }
+                        });
+                        
+                        if(wasHidden){
+                           colorDropdown.classList.remove('hidden');
+                           teamDiv.classList.add('z-20');
+                        } else {
+                           colorDropdown.classList.add('hidden');
+                           teamDiv.classList.remove('z-20');
+                        }
+                    });
+                });
+                renderColorPickers();
+            }
+            
+            function renderColorPickers() {
+                const availableColors = colorPalette.filter(c => !selectedColors.includes(c.name));
+                
+                selectedColors.forEach((selectedColorName, index) => {
+                    const dropdown = document.getElementById(`color-dropdown-${index}`);
+                    const swatch = document.getElementById(`color-swatch-${index}`);
+                    const teamDiv = swatch.closest('.space-y-2');
+                    dropdown.innerHTML = '';
+                    
+                    const currentTeamColor = selectedColorName ? colorPalette.find(c => c.name === selectedColorName) : null;
+                    if (currentTeamColor) {
+                        swatch.className = `color-swatch ${currentTeamColor.value}`;
+                    } else {
+                        swatch.className = 'color-swatch bg-gray-200';
+                    }
+
+                    const colorsForThisDropdown = [...availableColors];
+                    if(currentTeamColor && !colorsForThisDropdown.some(c => c.name === currentTeamColor.name)) {
+                        colorsForThisDropdown.push(currentTeamColor);
+                    }
+
+                    colorsForThisDropdown.sort((a,b) => colorPalette.indexOf(a) - colorPalette.indexOf(b)).forEach(color => {
+                        const colorOption = document.createElement('div');
+                        colorOption.className = `w-6 h-6 rounded-full cursor-pointer ${color.value} ${color.name === 'white' ? 'border border-gray-300' : ''}`;
+                        colorOption.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (selectedColors[index] === color.name) {
+                                dropdown.classList.add('hidden');
+                                teamDiv.classList.remove('z-20');
+                                return;
+                            };
+                            selectedColors[index] = color.name;
+                            dropdown.classList.add('hidden');
+                            teamDiv.classList.remove('z-20');
+                            renderColorPickers();
+                        });
+                        dropdown.appendChild(colorOption);
+                    });
+                });
+            }
+
+            function showScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(screenId).classList.add('active');
+            }
+
+            function initGame() {
+                teamNames = Array.from({length: 4}).map((_, i) => document.getElementById(`teamName${i}`).value.trim());
+                teamColors = [...selectedColors];
+
+                const inputSize = parseInt(boardSizeInput.value, 10);
+
+                if (inputSize < 1 || inputSize > 19 || teamNames.some(name => name === '') || teamColors.some(c => c === null)) {
+                    errorMessageContent.textContent = 'Per favore, inserisci un nome e un colore per ogni squadra e una dimensione valida per la griglia (1-19).';
+                    errorModal.classList.add('active');
+                    return;
+                }
+                
+                boardSize = (inputSize * 2) + 1;
+                const startPos = Math.floor(boardSize / 2);
+                currentX = startPos;
+                currentY = startPos;
+                gameOver = false;
+                passiTotali = [0, 0, 0, 0];
+                
+                createBoard();
+                createButtons();
+                showScreen('gameScreen');
+            }
+
+            function createBoard() {
+                boardContainer.innerHTML = '';
+                boardContainer.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
+                boardContainer.style.gridTemplateRows = `repeat(${boardSize}, 1fr)`;
+                
+                const borderColors = teamColors.map(cName => colorPalette.find(c => c.name === cName).border);
+
+                for (let y = 0; y < boardSize; y++) {
+                    for (let x = 0; x < boardSize; x++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.dataset.x = x;
+                        cell.dataset.y = y;
+
+                        const isCorner = (x === 0 && y === 0) || (x === 0 && y === boardSize - 1) || (x === boardSize - 1 && y === 0) || (x === boardSize - 1 && y === boardSize - 1);
+                        
+                        if (isCorner) {
+                            cell.classList.add('corner-cell');
+                        } else if (y === 0) {
+                            cell.classList.add(borderColors[0]);
+                        } else if (y === boardSize - 1) {
+                            cell.classList.add(borderColors[1]);
+                        } else if (x === 0) {
+                            cell.classList.add(borderColors[2]);
+                        } else if (x === boardSize - 1) {
+                            cell.classList.add(borderColors[3]);
+                        }
+                        boardContainer.appendChild(cell);
+                    }
+                }
+                
+                const startPos = Math.floor(boardSize / 2);
+                const startCell = document.querySelector(`.cell[data-x="${startPos}"][data-y="${startPos}"]`);
+                if (startCell) {
+                    startCell.classList.add('start');
+                    startCell.textContent = 'INIZIO';
+                    const piece = document.createElement('div');
+                    piece.className = 'piece';
+                    startCell.appendChild(piece);
+                    updatePiecePosition();
+                }
+            }
+
+            function createButtons() {
+                topControls.innerHTML = ''; bottomControls.innerHTML = '';
+                leftControls.innerHTML = ''; rightControls.innerHTML = '';
+                
+                const buttonColors = teamColors.map(cName => colorPalette.find(c => c.name === cName).value);
+                const buttonTextColors = teamColors.map(cName => colorPalette.find(c => c.name === cName).btnText);
+                const buttonContainers = [topControls, bottomControls, leftControls, rightControls];
+
+                teamNames.forEach((name, index) => {
+                    const group = document.createElement('div');
+                    group.className = 'button-group';
+                    const teamNameElement = document.createElement('h3');
+                    teamNameElement.className = 'text-lg font-bold text-gray-800';
+                    teamNameElement.textContent = name;
+                    const moveButton = document.createElement('button');
+                    moveButton.id = `moveBtn${index + 1}`;
+                    moveButton.className = `btn ${buttonColors[index]} ${buttonTextColors[index]}`;
+                    moveButton.textContent = 'Muovi';
+                    moveButton.addEventListener('click', () => movePiece(index));
+                    group.append(teamNameElement, moveButton);
+                    if (index === 2) group.classList.add('button-group-rotated', 'button-group-left');
+                    if (index === 3) group.classList.add('button-group-rotated', 'button-group-right');
+                    buttonContainers[index].appendChild(group);
+                });
+            }
+
+            function updatePiecePosition() {
+                document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('highlight'));
+                const piece = document.querySelector('.piece');
+                if (!piece) return;
+                const targetCell = document.querySelector(`.cell[data-x="${currentX}"][data-y="${currentY}"]`);
+                if (targetCell) {
+                    targetCell.classList.add('highlight');
+                    targetCell.appendChild(piece);
+                }
+            }
+
+            function movePiece(playerIndex) {
+                if (gameOver) return;
+                passiTotali[playerIndex]++;
+                let newX = currentX, newY = currentY;
+                switch(playerIndex) {
+                    case 0: newY -= 1; break;
+                    case 1: newY += 1; break;
+                    case 2: newX -= 1; break;
+                    case 3: newX += 1; break;
+                }
+                currentX = newX; currentY = newY;
+                updatePiecePosition();
+                if (currentX <= 0 || currentX >= boardSize - 1 || currentY <= 0 || currentY >= boardSize - 1) {
+                    endGame(playerIndex);
+                }
+            }
+
+            function endGame(playerIndex) {
+                gameOver = true;
+                const winningTeam = teamNames[playerIndex];
+                winMessage.textContent = `Complimenti, la squadra ${winningTeam} ha raggiunto il bordo e ha vinto! 🥳`;
+                winModal.classList.add('active');
+                document.querySelectorAll('.button-group button').forEach(btn => btn.disabled = true);
+            }
+
+            function terminaEcalcolaClassifica() {
+                if (gameOver) return;
+                gameOver = true;
+                document.querySelectorAll('.button-group button').forEach(btn => btn.disabled = true);
+                
+                const startPos = Math.floor(boardSize / 2);
+                
+                const scores = teamNames.map((name, i) => ({
+                    name: name,
+                    color: teamColors[i],
+                    score: i === 0 ? startPos - currentY : i === 1 ? currentY - startPos : i === 2 ? startPos - currentX : currentX - startPos,
+                    steps: passiTotali[i]
+                }));
+                
+                scores.sort((a, b) => {
+                    if (b.score !== a.score) return b.score - a.score;
+                    return b.steps - a.steps;
+                });
+                
+                leaderboardContent.innerHTML = '';
+                const medals = ['🥇', '🥈', '🥉', '4️⃣'];
+                let lastScore = -Infinity, lastSteps = -Infinity, rank = 0;
+
+                scores.forEach((team, index) => {
+                    if (team.score !== lastScore || team.steps !== lastSteps) {
+                        rank = index + 1;
+                        lastScore = team.score;
+                        lastSteps = team.steps;
+                    }
+                    const medal = rank <= 4 ? medals[rank - 1] : `${rank}.`;
+                    const colorInfo = colorPalette.find(c => c.name === team.color);
+
+                    const teamElement = document.createElement('div');
+                    teamElement.className = `flex items-center justify-between p-2 rounded-lg ${colorInfo.bgLight} ${colorInfo.borderClass} border-l-4`;
+                    teamElement.innerHTML = `
+                        <div class="flex items-center">
+                            <span class="text-xl w-8">${medal || ''}</span>
+                            <span class="font-bold text-lg text-gray-800">${team.name}</span>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-700">Punti: ${team.score}</p>
+                            <p class="text-sm text-gray-500">Passi totali: ${team.steps}</p>
+                        </div>
+                    `;
+                    leaderboardContent.appendChild(teamElement);
+                });
+
+                leaderboardModal.classList.add('active');
+            }
+
+            function resetGame() {
+                winModal.classList.remove('active');
+                leaderboardModal.classList.remove('active');
+                selectedColors = [null, null, null, null];
+                renderConfigScreen();
+                showScreen('configScreen');
+            }
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.color-picker')) {
+                    document.querySelectorAll('.color-dropdown').forEach(el => {
+                        if (!el.classList.contains('hidden')) {
+                            el.classList.add('hidden');
+                            el.closest('.space-y-2').classList.remove('z-20');
+                        }
+                    });
+                }
+            });
+
+            startGameBtn.addEventListener('click', initGame);
+            modalResetBtn.addEventListener('click', resetGame);
+            endGameBtn.addEventListener('click', terminaEcalcolaClassifica);
+            leaderboardResetBtn.addEventListener('click', resetGame);
+            errorModalOkBtn.addEventListener('click', () => errorModal.classList.remove('active'));
+            
+            renderConfigScreen();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
