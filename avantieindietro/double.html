@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avanti e Indietro - Doppio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        #configScreen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        #gameScreen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            min-height: 0;
+        }
+        
+        .board-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            flex-grow: 1;
+            min-height: 0;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .track-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .category-label {
+            font-weight: bold;
+            color: #4a5568;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+        }
+        
+        .board-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            gap: 2px;
+            padding: 5px;
+            border-radius: 10px;
+            background-color: #e2e8f0;
+            flex-grow: 1;
+        }
+
+        .cell {
+            flex: 1;
+            min-width: 20px; 
+            height: 40px;
+            background-color: #cbd5e1;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            position: relative;
+            text-align: center;
+            font-size: clamp(0.6rem, 1.2vw, 1rem);
+        }
+
+        .cell.start {
+            color: #ffffff;
+            flex-grow: 0; 
+            flex-shrink: 0;
+            font-size: 0.8rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .cell.highlight {
+            background-color: #63b3ed;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(99, 179, 237, 0.7);
+        }
+        
+        .cell.end {
+            color: #ffffff;
+            font-size: 0.8em;
+            flex-grow: 0;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .piece {
+            width: 35px;
+            height: 35px;
+            background-color: #fff;
+            border: 3px solid #000;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .controls-wrapper {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 20; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0s 0.3s;
+        }
+        .modal-overlay.active { 
+            opacity: 1; 
+            visibility: visible;
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            background-color: #ffffff; padding: 2rem; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center; transform: scale(0.9);
+            transition: transform 0.3s ease;
+            max-width: 90%;
+            width: 500px;
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        
+        .color-picker { position: relative; }
+        .color-swatch {
+            width: 1.75rem; height: 1.75rem; border-radius: 50%;
+            cursor: pointer; border: 2px solid #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+        .color-swatch:hover { transform: scale(1.1); }
+        .color-swatch.bg-white { border-color: #d1d5db; }
+        .color-dropdown {
+            position: absolute; z-index: 30; top: 120%; left: 50%;
+            transform: translateX(-50%); background-color: #fff;
+            border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 0.5rem; display: grid;
+            grid-template-columns: repeat(6, 1fr); gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer" class="container">
+        
+        <div id="configScreen" class="screen active">
+            <div class="w-full max-w-2xl mx-auto text-center">
+                <h1 class="text-3xl font-bold mb-4 text-gray-800">Imposta la partita doppia</h1>
+        
+                <div class="space-y-4">
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-3">Dimensione della griglia</h2>
+                        <div class="max-w-xs mx-auto">
+                            <label for="boardSize" class="block text-gray-600 font-medium mb-1">Numero di caselle per squadra</label>
+                            <input type="number" id="boardSize" min="1" max="15" value="7" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-lg">
+                        </div>
+                    </div>
+
+                    <!-- MODIFICA: Spostato il box Squadre prima di Categorie -->
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">Squadre</h2>
+                        <div id="teamsConfigContainer" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 max-w-3xl mx-auto">
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">Categorie</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 max-w-3xl mx-auto">
+                           <div>
+                                <label for="category1Name" class="block text-sm text-gray-600 font-medium mb-1">Nome Categoria 1</label>
+                                <input type="text" id="category1Name" placeholder="Es. Matematica" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center">
+                           </div>
+                           <div>
+                                <label for="category2Name" class="block text-sm text-gray-600 font-medium mb-1">Nome Categoria 2</label>
+                                <input type="text" id="category2Name" placeholder="Es. Geografia" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center">
+                           </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="mt-6">
+                    <button id="startGameBtn" class="bg-green-600 text-white btn text-lg px-6 py-2 transform hover:scale-105">Inizia il gioco</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="screen">
+            <div id="board-wrapper" class="board-wrapper">
+            </div>
+            <div class="controls-wrapper">
+                 <div id="team1Controls" class="button-group"></div>
+                 <div id="team2Controls" class="button-group"></div>
+            </div>
+             <div class="mt-4">
+                <button id="resetGameBtn" class="btn bg-gray-800">Nuova partita</button>
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="winModal" class="modal-overlay">
+        <div class="modal-content relative">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Gioco terminato! 🎉</h2>
+            <p id="winMessage" class="text-xl text-gray-600 font-semibold mb-6"></p>
+            <button id="modalResetBtn" class="btn bg-blue-500">Ricominciamo</button>
+        </div>
+    </div>
+
+    <div id="errorModal" class="modal-overlay">
+        <div class="modal-content relative">
+            <h2 class="text-2xl font-bold text-red-600 mb-4">Attenzione!</h2>
+            <p id="errorMessageContent" class="text-lg text-gray-700 mb-6"></p>
+            <button id="errorModalOkBtn" class="btn bg-red-500">OK</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const configScreen = document.getElementById('configScreen');
+            const gameScreen = document.getElementById('gameScreen');
+            const startGameBtn = document.getElementById('startGameBtn');
+            const boardSizeInput = document.getElementById('boardSize');
+            const category1NameInput = document.getElementById('category1Name');
+            const category2NameInput = document.getElementById('category2Name');
+            const teamsConfigContainer = document.getElementById('teamsConfigContainer');
+            
+            const boardWrapper = document.getElementById('board-wrapper');
+            const team1Controls = document.getElementById('team1Controls');
+            const team2Controls = document.getElementById('team2Controls');
+            const resetGameBtn = document.getElementById('resetGameBtn');
+            
+            const winModal = document.getElementById('winModal');
+            const winMessage = document.getElementById('winMessage');
+            const modalResetBtn = document.getElementById('modalResetBtn');
+            
+            const errorModal = document.getElementById('errorModal');
+            const errorMessageContent = document.getElementById('errorMessageContent');
+            const errorModalOkBtn = document.getElementById('errorModalOkBtn');
+            
+            const colorPalette = [
+                { name: 'green', value: 'bg-green-500', btnText: 'text-white'},
+                { name: 'red', value: 'bg-red-500', btnText: 'text-white'},
+                { name: 'purple', value: 'bg-purple-500', btnText: 'text-white'},
+                { name: 'amber', value: 'bg-amber-400', btnText: 'text-white'},
+                { name: 'blue', value: 'bg-blue-500', btnText: 'text-white'},
+                { name: 'pink', value: 'bg-pink-500', btnText: 'text-white'},
+                { name: 'cyan', value: 'bg-cyan-500', btnText: 'text-white'},
+                { name: 'teal', value: 'bg-teal-500', btnText: 'text-white'},
+                { name: 'black', value: 'bg-gray-800', btnText: 'text-white'},
+                { name: 'orange', value: 'bg-orange-500', btnText: 'text-white'},
+                { name: 'brown', value: 'bg-amber-800', btnText: 'text-white'},
+                { name: 'white', value: 'bg-white', btnText: 'text-gray-800'}
+            ];
+
+            let selectedColors = [null, null];
+            let teamNames = [];
+            let teamColors = [];
+            let categoryNames = [];
+            let boardSize;
+            let currentPositions = [0, 0];
+            let gameOver = false;
+
+            function renderConfigScreen() {
+                teamsConfigContainer.innerHTML = '';
+                const teamLabels = ['Squadra 1', 'Squadra 2'];
+                teamLabels.forEach((label, index) => {
+                    const teamDiv = document.createElement('div');
+                    teamDiv.className = 'space-y-2 relative';
+                    const labelEl = document.createElement('label');
+                    labelEl.className = 'block text-sm text-gray-600 font-medium mb-1';
+                    labelEl.textContent = label;
+                    const inputWrapper = document.createElement('div');
+                    inputWrapper.className = 'relative w-full';
+                    const nameInput = document.createElement('input');
+                    nameInput.type = 'text';
+                    nameInput.id = `teamName${index}`;
+                    nameInput.placeholder = 'Inserisci nome...';
+                    nameInput.className = 'w-full p-2 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center';
+                    const colorPickerDiv = document.createElement('div');
+                    colorPickerDiv.className = 'color-picker absolute left-2 top-1/2 -translate-y-1/2';
+                    const colorSwatch = document.createElement('div');
+                    colorSwatch.id = `color-swatch-${index}`;
+                    colorSwatch.className = 'color-swatch bg-gray-200';
+                    const colorDropdown = document.createElement('div');
+                    colorDropdown.id = `color-dropdown-${index}`;
+                    colorDropdown.className = 'color-dropdown hidden';
+                    colorPickerDiv.append(colorSwatch, colorDropdown);
+                    inputWrapper.append(colorPickerDiv, nameInput);
+                    teamDiv.append(labelEl, inputWrapper);
+                    teamsConfigContainer.appendChild(teamDiv);
+                    colorSwatch.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const wasHidden = colorDropdown.classList.contains('hidden');
+                        document.querySelectorAll('.color-dropdown').forEach((el, elIndex) => {
+                             if (elIndex !== index) {
+                                el.classList.add('hidden');
+                                el.closest('.space-y-2').classList.remove('z-20');
+                            }
+                        });
+                        // MODIFICA: Aggiunto z-index per risolvere la sovrapposizione
+                        if(wasHidden) {
+                            colorDropdown.classList.remove('hidden');
+                            teamDiv.classList.add('z-20');
+                        } else {
+                            colorDropdown.classList.add('hidden');
+                            teamDiv.classList.remove('z-20');
+                        }
+                    });
+                });
+                renderColorPickers();
+            }
+
+            function renderColorPickers() {
+                const availableColors = colorPalette.filter(c => !selectedColors.includes(c.name));
+                selectedColors.forEach((selectedColorName, index) => {
+                    const dropdown = document.getElementById(`color-dropdown-${index}`);
+                    const swatch = document.getElementById(`color-swatch-${index}`);
+                    const teamDiv = swatch.closest('.space-y-2');
+                    dropdown.innerHTML = '';
+                    const currentTeamColor = selectedColorName ? colorPalette.find(c => c.name === selectedColorName) : null;
+                    if (currentTeamColor) swatch.className = `color-swatch ${currentTeamColor.value}`;
+                    else swatch.className = 'color-swatch bg-gray-200';
+                    const colorsForThisDropdown = [...availableColors];
+                    if(currentTeamColor && !colorsForThisDropdown.some(c => c.name === currentTeamColor.name)) {
+                        colorsForThisDropdown.push(currentTeamColor);
+                    }
+                    colorsForThisDropdown.sort((a,b) => colorPalette.indexOf(a) - colorPalette.indexOf(b)).forEach(color => {
+                        const colorOption = document.createElement('div');
+                        colorOption.className = `w-6 h-6 rounded-full cursor-pointer ${color.value} ${color.name === 'white' ? 'border border-gray-300' : ''}`;
+                        colorOption.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            selectedColors[index] = color.name;
+                            dropdown.classList.add('hidden');
+                            teamDiv.classList.remove('z-20');
+                            renderColorPickers();
+                        });
+                        dropdown.appendChild(colorOption);
+                    });
+                });
+            }
+
+            function showScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(screenId).classList.add('active');
+            }
+
+            function initGame() {
+                teamNames = Array.from({length: 2}).map((_, i) => document.getElementById(`teamName${i}`).value.trim());
+                teamColors = [...selectedColors];
+                categoryNames = [category1NameInput.value.trim(), category2NameInput.value.trim()];
+                boardSize = parseInt(boardSizeInput.value, 10);
+
+                if (boardSize <= 0 || boardSize > 15 || teamNames.some(name => name === '') || teamColors.some(c => c === null) || categoryNames.some(name => name === '')) {
+                    errorMessageContent.textContent = 'Per favore, compila tutti i campi: nomi squadra, colori, categorie e dimensione valida (1-15).';
+                    errorModal.classList.add('active');
+                    return;
+                }
+                
+                currentPositions = [0, 0];
+                gameOver = false;
+                
+                createBoard();
+                createButtons();
+                showScreen('gameScreen');
+            }
+
+            function createBoard() {
+                boardWrapper.innerHTML = '';
+                categoryNames.forEach((name, trackIndex) => {
+                    const trackRow = document.createElement('div');
+                    trackRow.className = 'track-row';
+                    const categoryLabel = document.createElement('div');
+                    categoryLabel.className = 'category-label';
+                    categoryLabel.textContent = name;
+                    const boardContainer = document.createElement('div');
+                    boardContainer.className = 'board-container';
+                    boardContainer.id = `board-container-${trackIndex}`;
+
+                    for (let i = boardSize; i >= 1; i--) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        if (i === boardSize) {
+                            cell.classList.add('end', colorPalette.find(c => c.name === teamColors[0]).value);
+                            cell.innerHTML = `<span>FINE</span>`;
+                        } else { cell.textContent = i; }
+                        cell.dataset.index = -i;
+                        cell.dataset.track = trackIndex;
+                        boardContainer.appendChild(cell);
+                    }
+                    const startCell = document.createElement('div');
+                    startCell.className = 'cell start bg-gray-800';
+                    startCell.textContent = '0';
+                    startCell.dataset.index = 0;
+                    startCell.dataset.track = trackIndex;
+                    const piece = document.createElement('div');
+                    piece.className = 'piece';
+                    piece.id = `piece-${trackIndex}`;
+                    startCell.appendChild(piece);
+                    boardContainer.appendChild(startCell);
+                    for (let i = 1; i <= boardSize; i++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                         if (i === boardSize) {
+                            cell.classList.add('end', colorPalette.find(c => c.name === teamColors[1]).value);
+                            cell.innerHTML = `<span>FINE</span>`;
+                        } else { cell.textContent = i; }
+                        cell.dataset.index = i;
+                        cell.dataset.track = trackIndex;
+                        boardContainer.appendChild(cell);
+                    }
+                    trackRow.append(categoryLabel, boardContainer);
+                    boardWrapper.appendChild(trackRow);
+                });
+                updatePiecePositions();
+            }
+
+            function createButtons() {
+                team1Controls.innerHTML = '';
+                team2Controls.innerHTML = '';
+                const team1Color = colorPalette.find(c => c.name === teamColors[0]);
+                const team2Color = colorPalette.find(c => c.name === teamColors[1]);
+
+                const team1NameEl = document.createElement('h3');
+                team1NameEl.className = 'text-xl font-bold text-gray-800 mb-2';
+                team1NameEl.textContent = teamNames[0];
+                team1Controls.appendChild(team1NameEl);
+                
+                const team2NameEl = document.createElement('h3');
+                team2NameEl.className = 'text-xl font-bold text-gray-800 mb-2';
+                team2NameEl.textContent = teamNames[1];
+                team2Controls.appendChild(team2NameEl);
+
+                categoryNames.forEach((cat, index) => {
+                    const btn1 = document.createElement('button');
+                    btn1.textContent = `Muovi su ${cat}`;
+                    btn1.className = `btn ${team1Color.value} ${team1Color.btnText}`;
+                    btn1.addEventListener('click', () => movePiece(-1, index));
+                    team1Controls.appendChild(btn1);
+
+                    const btn2 = document.createElement('button');
+                    btn2.textContent = `Muovi su ${cat}`;
+                    btn2.className = `btn ${team2Color.value} ${team2Color.btnText}`;
+                    btn2.addEventListener('click', () => movePiece(1, index));
+                    team2Controls.appendChild(btn2);
+                });
+            }
+
+            function updatePiecePositions() {
+                document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('highlight'));
+                currentPositions.forEach((pos, index) => {
+                    const piece = document.getElementById(`piece-${index}`);
+                    if (!piece) return;
+                    let targetCell = document.querySelector(`.cell[data-track="${index}"][data-index="${pos}"]`);
+                    if (targetCell) {
+                        targetCell.classList.add('highlight');
+                        targetCell.appendChild(piece);
+                    }
+                });
+            }
+
+            function movePiece(direction, trackIndex) {
+                if (gameOver) return;
+                let currentPosition = currentPositions[trackIndex];
+                const nextPosition = currentPosition + direction;
+                
+                if (Math.abs(nextPosition) > boardSize) {
+                    currentPosition = (direction > 0) ? boardSize : -boardSize;
+                } else {
+                    currentPosition = nextPosition;
+                }
+                currentPositions[trackIndex] = currentPosition;
+                
+                if (Math.abs(currentPosition) === boardSize) {
+                    endGame(trackIndex);
+                }
+                updatePiecePositions();
+            }
+
+            function endGame(trackIndex) {
+                gameOver = true;
+                const winningTeam = currentPositions[trackIndex] > 0 ? teamNames[1] : teamNames[0];
+                const winningCategory = categoryNames[trackIndex];
+                winMessage.textContent = `Complimenti, la squadra ${winningTeam} ha vinto su ${winningCategory}! 🥳`;
+                winModal.classList.add('active');
+                document.querySelectorAll('.controls-wrapper .btn').forEach(b => b.disabled = true);
+            }
+
+            function resetGame() {
+                winModal.classList.remove('active');
+                selectedColors = [null, null];
+                renderConfigScreen();
+                showScreen('configScreen');
+            }
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.color-picker')) {
+                    document.querySelectorAll('.color-dropdown').forEach(el => {
+                       if (!el.classList.contains('hidden')) {
+                           el.classList.add('hidden');
+                           el.closest('.space-y-2').classList.remove('z-20');
+                       }
+                    });
+                }
+            });
+
+            startGameBtn.addEventListener('click', initGame);
+            resetGameBtn.addEventListener('click', resetGame);
+            modalResetBtn.addEventListener('click', resetGame);
+            errorModalOkBtn.addEventListener('click', () => errorModal.classList.remove('active'));
+            
+            renderConfigScreen();
+        });
+    </script>
+</body>
+</html>
+
+
