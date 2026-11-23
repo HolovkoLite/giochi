@@ -1,0 +1,1252 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Somiglianze</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,400..900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23123A31'/%3E%3Crect x='6' y='4' width='20' height='29' fill='%23F4EFE4' stroke='%230A241E' stroke-width='2.5'/%3E%3Crect x='16' y='20' width='27' height='20' fill='%23FF6B3D' stroke='%230A241E' stroke-width='2.5'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#123A31; --ink:#0A241E; --ink2:#0D2A23; --paper:#F4EFE4; --white:#FFFDF7;
+  --or:#FF6B3D; --ordk:#C2461F; --gr:#1F5E4E; --mu:#B5CBC3; --li:#5F877C; --slot:#2C5A4F; --tx2:#43574F;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--paper);font-family:'Anybody',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:disabled{cursor:default}
+:focus-visible{outline:3px dashed var(--paper);outline-offset:4px}
+.mono{font-family:'DM Mono',ui-monospace,monospace}
+.or{color:var(--or)}
+.title{font-weight:900;font-stretch:62%;letter-spacing:.5px;text-shadow:3px 3px 0 var(--or);line-height:1}
+.dots{background-color:var(--gr);background-image:radial-gradient(var(--or) 1.6px,transparent 1.8px);background-size:9px 9px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* pulsanti */
+.btn{min-height:48px;padding:0 18px;border:3px solid var(--ink);background:var(--paper);color:var(--ink2);font-weight:800;font-stretch:85%;font-size:18px;box-shadow:5px 5px 0 var(--or);display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}
+.btn:active:not(:disabled){transform:translate(3px,3px);box-shadow:2px 2px 0 var(--or)}
+.btn.or{background:var(--or);box-shadow:5px 5px 0 var(--ink)}
+.btn.or:active:not(:disabled){box-shadow:2px 2px 0 var(--ink)}
+.btn.ink{box-shadow:5px 5px 0 var(--ink)}
+.btn.ghost{background:transparent;color:var(--paper);border-color:var(--paper);box-shadow:none}
+.btn.sm{min-height:44px;font-size:16px;padding:0 14px}
+.btn:disabled{background:transparent;border-color:var(--li);color:var(--mu);box-shadow:none}
+.btn:disabled svg rect{stroke:var(--mu)}
+.lnk{background:none;border:none;padding:6px 0;color:inherit;text-decoration:underline;text-underline-offset:3px;font-size:16px;min-height:44px}
+
+/* pagine (home, mazzi) */
+.page{max-width:1100px;margin:0 auto;padding:28px 22px 70px}
+.ph{display:flex;align-items:center;gap:14px;margin-bottom:28px;flex-wrap:wrap}
+.ph .title{font-size:44px}
+.ph .back{margin-left:auto}
+.homegrid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:30px;align-items:start}
+@media (max-width:880px){.homegrid{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:30px}
+.panel{background:var(--paper);color:var(--ink2);border:3px solid var(--ink);box-shadow:7px 7px 0 var(--ink);padding:22px 22px 24px}
+.panel h2{margin:0 0 6px;font-weight:850;font-stretch:72%;font-size:32px;line-height:1.05}
+.panel h3{margin:18px 0 8px;font-weight:800;font-stretch:80%;font-size:21px}
+.panel p{margin:6px 0 12px;font-size:17px;line-height:1.4}
+.muted{color:var(--tx2)}
+.step{display:flex;align-items:center;gap:10px;font-weight:800;font-stretch:80%;font-size:21px;margin:22px 0 10px}
+.stepn{width:30px;height:30px;flex:none;background:var(--ink2);color:var(--or);display:flex;align-items:center;justify-content:center;font-size:15px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:520px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:3px;text-align:left;border:3px solid var(--ink);background:var(--white);color:var(--ink2);padding:12px 14px;min-height:64px}
+.opt b{font-weight:800;font-stretch:85%;font-size:19px;line-height:1.1}
+.opt small{font-size:15px;color:var(--tx2);line-height:1.3}
+.opt[aria-pressed="true"]{background:var(--or);box-shadow:4px 4px 0 var(--ink)}
+.opt[aria-pressed="true"] small{color:var(--ink2)}
+.opt:disabled{opacity:.5}
+.decklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:520px){.decklist{grid-template-columns:1fr}}
+.warn{color:var(--ordk);font-weight:700}
+.msg{margin-top:14px;padding:10px 12px;border:3px solid var(--ink);background:var(--ink2);color:var(--paper);font-size:16px;line-height:1.35}
+.msg.ok{background:var(--gr)}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.row > .grow{flex:1;min-width:180px}
+label.fl{display:block;font-weight:700;font-stretch:90%;font-size:16px;margin:0 0 6px}
+input[type=text],input[type=url],input[type=search],textarea{font:inherit;font-size:17px;border:3px solid var(--ink);background:var(--white);color:var(--ink2);padding:10px 12px;min-height:48px;width:100%;border-radius:0}
+input.code{font-family:'DM Mono',monospace;font-size:26px;letter-spacing:6px;max-width:220px}
+textarea{min-height:120px;font-family:'DM Mono',monospace;font-size:14px}
+pre.rules{background:var(--ink2);color:var(--paper);padding:12px;font-size:13px;overflow:auto;margin:8px 0 10px}
+ol.steps{margin:6px 0 12px;padding-left:22px;font-size:16px;line-height:1.45}
+details > summary{cursor:pointer;font-weight:850;font-stretch:72%;font-size:28px;list-style:none;min-height:44px}
+details > summary::-webkit-details-marker{display:none}
+details > summary::after{content:' +';color:var(--ordk)}
+details[open] > summary::after{content:' −'}
+
+/* mazzi */
+.dk{display:flex;flex-direction:column;gap:12px}
+.dkrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px;border:3px solid var(--ink);background:var(--white)}
+.dkrow .nm2{flex:1;min-width:180px;font-weight:800;font-stretch:85%;font-size:21px}
+.dkrow .nm2 small{display:block;font-family:'DM Mono',monospace;font-weight:400;font-size:14px;color:var(--tx2);margin-top:2px}
+.cardrows{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.crow{display:grid;grid-template-columns:38px 56px minmax(0,1.2fr) minmax(0,1fr) auto auto;gap:10px;align-items:center}
+@media (max-width:720px){.crow{grid-template-columns:30px 48px minmax(0,1fr) auto auto}.crow .curl{order:9;grid-column:1 / -1}}
+.crow .idx{font-family:'DM Mono',monospace;font-size:14px;color:var(--tx2)}
+.thumb{width:56px;height:56px;border:3px solid var(--ink);background:var(--paper) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--tx2)}
+.iconbtn{min-width:44px;min-height:44px;border:3px solid var(--ink);background:var(--white);color:var(--ink2);display:inline-flex;align-items:center;justify-content:center;padding:0 10px;font-size:15px}
+.addbox{border:3px dashed var(--ink);padding:14px;margin-top:14px;background:var(--white)}
+
+/* LIM */
+.limwrap{position:fixed;inset:0;background:var(--bg);overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;padding:28px 40px 36px;display:flex;flex-direction:column;gap:18px}
+.lhead{display:flex;align-items:center;gap:36px;height:52px;flex:none}
+.lhl{flex:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:center;padding-right:6px;min-width:0}
+.lhl .brand{grid-column:1 / span 3;display:flex;align-items:center;gap:14px}
+.lhl .brand .title{font-size:40px}
+.lhl .clr{grid-column:4;display:flex}
+.clearbtn{min-height:44px;width:100%;padding:0 8px;border:2px solid var(--paper);background:transparent;color:var(--paper);font-size:14px;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:7px}
+.lhr{width:330px;flex:none;display:flex;align-items:center;justify-content:flex-end;gap:12px}
+.chipc{height:44px;padding:0 12px;border:2px solid var(--paper);display:flex;align-items:center;gap:8px;font-size:15px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--li)}
+.dot.on{background:var(--or)}
+.menubtn{min-height:44px;padding:0 16px;border:none;background:var(--paper);color:var(--ink2);font-size:16px}
+.lmain{flex:1;display:flex;gap:36px;min-height:0}
+.lgrid{flex:1;position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));gap:18px 16px;padding:0 6px 6px 0;min-height:0;min-width:0}
+.card{position:relative;border:3px solid var(--ink);background:var(--paper);color:var(--ink2);box-shadow:5px 5px 0 var(--ink);padding:34px 14px 12px;display:flex;flex-direction:column;text-align:left;min-width:0;min-height:0;overflow:hidden}
+.card:disabled{opacity:1}
+.card.sel{background:var(--or);transform:rotate(-2deg);box-shadow:6px 6px 0 var(--ink)}
+.card.hit{background:var(--or)}
+.cnum{position:absolute;top:9px;left:12px;font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--ordk)}
+.card.sel .cnum{color:var(--ink2)}
+.stamp{position:absolute;top:8px;right:8px;width:50px;height:50px;border-radius:50%;background:var(--ink2);color:var(--or);font-family:'DM Mono',monospace;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;transform:rotate(10deg);z-index:2}
+.tag{position:absolute;top:9px;left:10px;background:var(--ink2);color:var(--or);font-family:'DM Mono',monospace;font-size:13px;font-weight:500;padding:3px 8px;z-index:2}
+.cbody{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:7px;min-height:0;width:100%}
+.cimg{flex:1 1 auto;min-height:36px;width:100%;object-fit:cover;border:2px solid var(--ink);background:var(--white);display:block}
+.nm{display:block;font-weight:760;line-height:1.03;hyphens:manual;overflow-wrap:normal;word-break:normal;flex:none}
+.nm.brk{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere}
+.cardout{border:3px solid var(--ink);display:flex;align-items:flex-end;padding:10px 12px;min-width:0}
+.cardout span{background:var(--ink);color:var(--paper);font-size:13px;padding:3px 7px}
+.laside{width:330px;flex:none;display:flex;flex-direction:column;gap:14px;min-height:0}
+.turn{display:flex;justify-content:space-between;align-items:center;height:40px}
+.turn b{font-weight:800;font-size:24px;font-stretch:75%}
+.sqs{display:flex;gap:5px}
+.sq{width:14px;height:14px;border:2px solid var(--li)}
+.sq.done{background:var(--paper);border-color:var(--paper)}
+.sq.cur{width:30px;background:var(--or);border-color:var(--or)}
+.cluebox{background:var(--ink);padding:12px 18px 14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.cluebox .lbl{font-size:14px;color:var(--mu)}
+.cc{background:var(--paper);color:var(--ink2);border:3px solid var(--ink);padding:10px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;box-shadow:6px 6px 0 var(--or);overflow:hidden}
+.cc.v{width:110px;height:154px}
+.cc.h{width:154px;height:110px}
+.cc .cimg{min-height:24px}
+.slotc{width:110px;height:154px;border:2px dashed var(--li);display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;color:var(--mu);padding:10px}
+.kchip{background:var(--or);color:var(--ink2);font-size:15px;font-weight:500;padding:5px 12px}
+.prev{display:flex;flex-direction:column;gap:8px}
+.prev .lbl{font-size:14px;color:var(--mu)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{min-height:30px;max-width:100%;padding:3px 9px;background:var(--paper);color:var(--ink2);border:2px solid var(--ink);display:flex;align-items:center;gap:7px;font-weight:700;font-stretch:85%;font-size:14px;line-height:1.1}
+.chip svg{flex:none}
+.lfoot{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.big{font-weight:850;font-size:40px;font-stretch:70%;line-height:1}
+.big.sm{font-size:34px}
+.hint{font-size:14px;color:var(--mu)}
+.slots{display:grid;gap:6px;margin-top:4px}
+.slots span{height:12px;background:var(--slot)}
+.slots span.f{background:var(--or)}
+.slots span.s{background:var(--paper)}
+.endb{display:flex;gap:12px;margin-top:8px}
+.wait{position:absolute;inset:0 6px 6px 0;background:rgba(10,36,30,.86);display:flex;align-items:center;justify-content:center;z-index:5}
+.waitbox{background:var(--paper);color:var(--ink2);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--or);padding:24px 28px;display:flex;gap:28px;align-items:center;max-width:720px}
+.waitbox h3{margin:0 0 8px;font-weight:850;font-stretch:72%;font-size:34px}
+.waitbox ol{margin:0 0 12px;padding-left:22px;font-size:18px;line-height:1.45}
+.bigcode{font-family:'DM Mono',monospace;font-size:44px;letter-spacing:8px;font-weight:500}
+.qr{width:170px;height:170px;flex:none;background:var(--white);border:3px solid var(--ink);display:flex;align-items:center;justify-content:center}
+.qr svg{width:100%;height:100%;display:block}
+.qr.sm{width:120px;height:120px}
+
+/* suggeritore */
+.sg{max-width:540px;margin:0 auto;padding:22px 20px 40px;display:flex;flex-direction:column;gap:18px}
+.sghead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sghead .title{font-size:28px;text-shadow:2px 2px 0 var(--or)}
+.sgstat{font-size:14px;color:var(--mu);display:flex;align-items:center;gap:8px}
+.secret{background:var(--or);color:var(--ink2);border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:14px 16px 16px;display:flex;gap:14px;align-items:center;margin-right:6px}
+.secret .simg{width:76px;height:76px;flex:none;object-fit:cover;border:2px solid var(--ink);background:var(--white)}
+.secret .lbl{font-size:14px;font-weight:500}
+.secret .snm{display:block;font-weight:760;line-height:1.02;font-size:38px;font-stretch:85%;hyphens:auto;overflow-wrap:break-word;margin-top:6px}
+.sect{font-size:14px;color:var(--mu)}
+.hand{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-right:6px}
+.hcard{position:relative;height:96px;border:3px solid var(--ink);background:var(--paper);color:var(--ink2);padding:8px 10px;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;box-shadow:4px 4px 0 var(--ink);overflow:hidden}
+.hcard[aria-pressed="true"]{box-shadow:5px 5px 0 var(--or);transform:rotate(-1.5deg);outline:3px solid var(--or);outline-offset:2px}
+.hcard.wimg{height:156px}
+.hcard .cimg{flex:1 1 auto;min-height:40px}
+.hinfo{min-height:96px;border:2px dashed var(--li);color:var(--mu);font-size:13px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px}
+.kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-right:6px}
+.kind{min-height:96px;flex-direction:column;gap:6px;font-size:21px}
+.sbox{background:var(--ink);padding:16px;display:flex;flex-direction:column;gap:6px}
+.mboard{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.mc{position:relative;height:70px;border:2px solid var(--ink);background:var(--paper);color:var(--ink2);padding:18px 6px 5px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;min-width:0}
+.mc .mn{position:absolute;top:3px;left:5px;font-family:'DM Mono',monospace;font-size:11px;color:var(--ordk)}
+.mc.sel{background:var(--or)}
+.mc.dots{background-color:var(--gr);background-image:radial-gradient(var(--or) 1.4px,transparent 1.6px);background-size:7px 7px}
+.mc.sel .mn{color:var(--ink2)}
+.mc.sec{outline:3px solid var(--or);outline-offset:-1px}
+.mc.sec .mn{color:var(--ink2);background:var(--or);padding:0 4px;left:0;top:0}
+.mc.out{padding:5px}
+.mc.out .mn{color:var(--paper);background:var(--ink);padding:0 4px;left:3px;top:auto;bottom:3px}
+.mc .nm{font-size:13px;font-weight:700}
+.banner{background:var(--paper);color:var(--ink2);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--or);padding:14px 16px;display:flex;gap:14px;align-items:center}
+.banner p{margin:0 0 6px;font-size:16px;line-height:1.35}
+.sgfoot{display:flex;justify-content:center;margin-top:8px}
+
+/* menu */
+.modal{position:fixed;inset:0;background:rgba(10,36,30,.8);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modalbox{background:var(--paper);color:var(--ink2);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--or);padding:22px 24px;max-width:620px;width:100%;max-height:92vh;overflow:auto}
+.modalbox h2{margin:0 0 10px;font-weight:850;font-stretch:72%;font-size:32px}
+.modalbox ul{padding-left:20px;font-size:17px;line-height:1.45;margin:0 0 16px}
+.modalbox .row{margin-top:10px}
+.center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+
+/* v1.1 */
+.badge{display:inline-block;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;background:var(--ink2);color:var(--paper);padding:2px 7px;margin:4px 6px 0 0;line-height:1.4;font-stretch:100%}
+.badge.or{background:var(--or);color:var(--ink2)}
+.soon{display:inline-block;font-family:'DM Mono',monospace;font-size:12px;background:var(--ink2);color:var(--or);padding:2px 7px;margin-top:4px}
+.empty{border:3px dashed var(--ink);padding:16px 16px 6px;background:var(--white)}
+.empty p{margin:0 0 12px}
+.chk{display:flex;gap:10px;align-items:center;font-size:16px;margin-top:10px;min-height:44px;cursor:pointer}
+.chk input{width:22px;height:22px;accent-color:var(--ordk);flex:none}
+.danger{margin-top:28px;border-top:3px dashed var(--ink);padding-top:16px}
+.note{border:3px solid var(--ink);background:var(--white);padding:12px 14px;margin:12px 0;font-size:16px;line-height:1.4}
+.foot{margin-top:36px;display:flex;justify-content:center;gap:6px;align-items:center;flex-wrap:wrap;color:var(--mu);font-size:14px}
+.foot .lnk{color:var(--mu);font-size:14px}
+.guide h2{font-size:40px;margin-bottom:12px}
+.gsec{margin-top:28px}
+.gsec h3{font-size:25px;margin:0 0 8px}
+.gsec p,.gsec li{font-size:17px;line-height:1.5}
+.gsec ul,.gsec ol{padding-left:22px;margin:6px 0 12px}
+kbd{font-family:'DM Mono',monospace;font-size:14px;border:2px solid var(--ink);background:var(--white);padding:0 5px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+.toc .lnk{font-size:15px;min-height:36px}
+.gsec li .lnk{min-height:0;padding:0;font-size:inherit}
+.side h2{font-size:26px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+/* =====================================================================
+   SOMIGLIANZE · versione 1.1
+   Strumento didattico gratuito e senza scopo di lucro, ispirato alle
+   meccaniche del gioco da tavolo Similo (Horrible Guild). Non è affiliato
+   né approvato dall'editore. Tutti i marchi appartengono ai rispettivi
+   proprietari.
+   ---------------------------------------------------------------------
+   MODALITÀ «DUE DISPOSITIVI» (in arrivo, per ora disattivata)
+   Per attivarla: MULTI_DEVICE = true e incolla in FIREBASE_CONFIG
+   l'oggetto firebaseConfig della console Firebase (deve contenere
+   databaseURL). Regole da pubblicare nel Realtime Database:
+   {
+     "rules": {
+       "rooms": {
+         ".read": "query.orderByChild === 'createdAt' && query.endAt <= now - 2592000000",
+         ".indexOn": ["createdAt"],
+         "$code": { ".read": true, ".write": true, ".validate": "$code.matches(/^[0-9]{5}$/)" }
+       }
+     }
+   }
+   ===================================================================== */
+const VERSION = '1.1';
+const MULTI_DEVICE = false;
+const FIREBASE_CONFIG = null;
+
+const FIREBASE_VERSION = '13.4.0';
+const NEED = [1, 2, 3, 4, 1];
+const MIN_CARDS = 21;
+const LS_DECKS = 'somiglianze.mazzi', SS_DECKS = 'somiglianze.mazziLezione', LS_PREF = 'somiglianze.preferenze';
+const LS_LOCAL = 'somiglianze.partitaLocale', SS_SES = 'somiglianze.sessione';
+const ROOM_DAYS = 30, LOCAL_MAX_HOURS = 12;
+const FILE_ACCEPT = '.csv,.tsv,.txt,.xlsx,.xlsm,.xls,.ods';
+const DISCLAIMER = 'Somiglianze è uno strumento didattico gratuito e senza scopo di lucro, realizzato per l’uso in classe. Si ispira alle meccaniche del gioco da tavolo Similo, pubblicato da Horrible Guild, ma non è affiliato né approvato dall’editore. Tutti i marchi appartengono ai rispettivi proprietari. Le carte sono create dai docenti che usano lo strumento. Se il gioco vi piace, sostenete gli autori acquistando l’originale.';
+const RULES_HTML = `<li>Sul tavolo ci sono 12 carte. Il suggeritore conosce quella segreta: la classe deve scoprirla.</li>
+      <li>A ogni turno il suggeritore gioca una carta della sua mano. <b>In piedi</b>: la segreta le somiglia. <b>Sdraiata</b>: la segreta è diversa.</li>
+      <li>La classe gira le carte che secondo lei <b>non</b> sono la segreta: 1 al primo turno, poi 2, 3, 4 e infine 1.</li>
+      <li>Un tocco seleziona la carta (diventa arancio), un secondo tocco la gira. «Annulla selezione» toglie tutte le selezioni.</li>
+      <li>Se la classe gira la carta segreta, perde. Se dopo il quinto turno resta solo la segreta, vince.</li>`;
+/* ---------- utilità ---------- */
+const $app = document.getElementById('app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const zeros = () => Array(12).fill(0);
+const rnd = n => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
+const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const uid = () => Date.now().toString(36) + rnd(1e6).toString(36);
+const arr = x => Array.isArray(x) ? x.filter(v => v != null) : (x && typeof x === 'object') ? Object.keys(x).sort((a, b) => a - b).map(k => x[k]).filter(v => v != null) : [];
+const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
+const lsSet = (k, v) => { localStorage.setItem(k, JSON.stringify(v)); };
+
+function driveFix(u) {
+  const m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=|thumbnail\?id=)([\w-]{10,})/);
+  return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800` : u;
+}
+function safeImg(u) {
+  u = String(u || '').trim();
+  if (/^data:image\/(png|jpe?g|gif|webp);base64,[a-z0-9+/=]+$/i.test(u)) return u;
+  if (/^https?:\/\/[^\s"'<>]+$/i.test(u)) return driveFix(u);
+  return '';
+}
+const clean = c => { const o = { n: String(c.n || '').trim() }; const im = safeImg(c.img); if (im) o.img = im; return o; };
+
+/* codifica della carta segreta: non è una protezione vera, evita solo che si legga a colpo d'occhio */
+const encS = i => { const s = 101 + rnd(8000); return (s * 17 + i).toString(36) + '-' + s.toString(36); };
+const decS = x => { if (!x) return -1; const [a, b] = String(x).split('-'); return parseInt(a, 36) - parseInt(b, 36) * 17; };
+
+/* dimensione del nome in base alla lunghezza; poi fitAll() rifinisce misurando */
+function fitInit(n, k = 1) {
+  const L = n.length, W = Math.max(...n.split(/\s+/).map(w => w.length));
+  let fs = L <= 10 ? 34 : L <= 14 ? 30 : L <= 18 ? 27 : 25;
+  let w = L <= 10 ? 100 : L <= 14 ? 88 : L <= 18 ? 78 : 70;
+  if (W >= 10) w = Math.min(w, 72);
+  return { fs: Math.round(fs * k), w };
+}
+function nameSpan(n, k = 1) {
+  const f = fitInit(n, k);
+  return `<span class="nm fit" style="font-size:${f.fs}px;font-stretch:${f.w}%">${esc(n)}</span>`;
+}
+function fitAll() {
+  document.querySelectorAll('[data-fit]').forEach(box => {
+    const el = box.querySelector('.fit'); if (!el) return;
+    let fs = parseFloat(el.style.fontSize) || 20, g = 0;
+    const over = () => box.scrollHeight > box.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1;
+    while (over() && fs > 11 && g++ < 60) { fs -= 1; el.style.fontSize = fs + 'px'; }
+    if (over()) el.classList.add('brk');
+  });
+}
+
+const LOGO = (s = 48) => `<svg width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true"><rect x="7" y="5" width="21" height="31" fill="#0A241E"/><rect x="4" y="2" width="21" height="31" fill="#F4EFE4" stroke="#0A241E" stroke-width="2.5"/><rect x="18" y="22" width="28" height="21" fill="#0A241E"/><rect x="15" y="19" width="28" height="21" fill="#FF6B3D" stroke="#0A241E" stroke-width="2.5"/></svg>`;
+const ICO_V = (c = '#0D2A23', w = 11, h = 16) => `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><rect x="1.25" y="1.25" width="${w - 2.5}" height="${h - 2.5}" fill="none" stroke="${c}" stroke-width="2.5"/></svg>`;
+const ICO_X = `<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"/></svg>`;
+
+/* ---------- stato dell'app ---------- */
+const S = {
+  view: 'home', decks: [], editId: null,
+  pref: Object.assign({ deck: null, mode: 'local', role: 'sugg', keep: 'device' }, lsGet(LS_PREF, {})),
+  session: null, room: null, t: null, loaded: false,
+  ui: { msg: '', msgOk: false, busy: false, hand: null, menu: false, confirmExit: false, hideWait: false, opened: false, joinAsk: null, gsOpen: false, gsLink: true, delAsk: null, wipeAsk: false, flash: '', anchor: null }
+};
+
+/* I mazzi restano nel browser: «salvati su questo dispositivo» in localStorage,
+   «solo per questa lezione» in sessionStorage (spariscono chiudendo la scheda). */
+const ssGet = (k, d) => { try { const v = sessionStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
+function loadDecks() {
+  const ok = d => d && d.id && Array.isArray(d.cards);
+  const a = lsGet(LS_DECKS, []).filter(ok).map(d => ({ ...d, temp: false }));
+  const b = ssGet(SS_DECKS, []).filter(ok).map(d => ({ ...d, temp: true }));
+  S.decks = [...a, ...b];
+}
+function saveDecks() {
+  const strip = d => { const { temp, ...o } = d; return o; };
+  try {
+    localStorage.setItem(LS_DECKS, JSON.stringify(S.decks.filter(d => !d.temp).map(strip)));
+    sessionStorage.setItem(SS_DECKS, JSON.stringify(S.decks.filter(d => d.temp).map(strip)));
+    return true;
+  } catch (e) { setMsg('Spazio esaurito in questo browser: usa link alle immagini invece di caricarle, oppure elimina qualche mazzo.'); return false; }
+}
+function wipeAll() {
+  [LS_DECKS, LS_PREF, LS_LOCAL].forEach(k => { try { localStorage.removeItem(k); } catch {} });
+  try { sessionStorage.removeItem(SS_DECKS); } catch {}
+  S.decks = []; S.pref = { deck: null, mode: 'local', role: 'sugg', keep: 'device' };
+}
+function downloadText(name, txt, type = 'text/csv;charset=utf-8') {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + txt], { type }));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+const storeLabel = d => d.temp ? 'solo per questa lezione' : 'salvato su questo dispositivo';
+function savePref() { try { lsSet(LS_PREF, S.pref); } catch {} }
+const deckById = id => S.decks.find(d => d.id === id);
+function setMsg(t, ok = false) { S.ui.msg = t; S.ui.msgOk = ok; render(); }
+let flashT = null;
+function flash(t) { S.ui.flash = t; render(); clearTimeout(flashT); flashT = setTimeout(() => { S.ui.flash = ''; render(); }, 2600); }
+
+/* ---------- Firebase ---------- */
+function fbConfig() {
+  return MULTI_DEVICE && FIREBASE_CONFIG && FIREBASE_CONFIG.databaseURL ? { cfg: FIREBASE_CONFIG, from: 'file' } : null;
+}
+let FB = null;
+async function fb() {
+  if (FB) return FB;
+  const c = fbConfig(); if (!c) throw new Error('nocfg');
+  const base = `https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/`;
+  const appM = await import(base + 'firebase-app.js');
+  const dbM = await import(base + 'firebase-database.js');
+  const app = appM.initializeApp(c.cfg);
+  FB = { ...dbM, db: dbM.getDatabase(app) };
+  return FB;
+}
+function errText(e) {
+  const m = String(e && (e.code || e.message) || e);
+  if (m === 'nocfg') return 'La modalità su due dispositivi non è ancora disponibile.';
+  if (/permission|PERMISSION_DENIED/i.test(m)) return 'Firebase ha rifiutato l’accesso: controlla di aver pubblicato le regole del database.';
+  if (/Failed to fetch|import|network/i.test(m)) return 'Non riesco a raggiungere Firebase: controlla la connessione a internet.';
+  return 'Qualcosa è andato storto: ' + m;
+}
+async function cleanupRooms(F) {
+  try {
+    const cutoff = Date.now() - (ROOM_DAYS + 1) * 86400000;
+    const q = F.query(F.ref(F.db, 'rooms'), F.orderByChild('createdAt'), F.endAt(cutoff));
+    const snap = await F.get(q);
+    const jobs = []; snap.forEach(ch => { jobs.push(F.remove(ch.ref)); });
+    await Promise.all(jobs);
+  } catch (e) { console.warn('Pulizia stanze non riuscita', e); }
+}
+async function freeCode(F) {
+  for (let k = 0; k < 15; k++) {
+    const code = String(10000 + rnd(90000));
+    const s = await F.get(F.ref(F.db, 'rooms/' + code));
+    if (!s.exists()) return code;
+  }
+  throw new Error('Non trovo un codice libero, riprova.');
+}
+
+/* ---------- collegamento: stesso PC oppure Firebase ---------- */
+class LocalLink {
+  open(cb) {
+    this.cb = cb;
+    this.h = e => { if (e.key === LS_LOCAL) cb(lsGet(LS_LOCAL, null)); };
+    addEventListener('storage', this.h);
+    cb(lsGet(LS_LOCAL, null));
+  }
+  patch(p) { const s = lsGet(LS_LOCAL, null) || {}; Object.assign(s, p); lsSet(LS_LOCAL, s); this.cb(s); return Promise.resolve(); }
+  presence() {}
+  destroy() { localStorage.removeItem(LS_LOCAL); return Promise.resolve(); }
+  close() { removeEventListener('storage', this.h); }
+}
+class FbLink {
+  constructor(code) { this.code = code; }
+  async open(cb) {
+    const F = this.F = await fb();
+    this.ref = F.ref(F.db, 'rooms/' + this.code);
+    this.unsub = F.onValue(this.ref, s => cb(s.val()), e => { S.ui.err = errText(e); render(); });
+  }
+  patch(p) { return this.F.update(this.ref, p); }
+  async presence(role) {
+    const F = this.F, r = F.ref(F.db, `rooms/${this.code}/peers/${role}`);
+    this.pr = r;
+    await F.onDisconnect(r).remove();
+    await F.set(r, true);
+  }
+  destroy() { return this.F.remove(this.ref); }
+  close() { try { this.unsub && this.unsub(); if (this.pr) { this.F.onDisconnect(this.pr).cancel(); this.F.remove(this.pr).catch(() => {}); } } catch {} }
+}
+
+function normRoom(st) {
+  const r = { ...st };
+  r.cards = arr(st.cards); r.hand = arr(st.hand); r.pile = arr(st.pile); r.clues = arr(st.clues);
+  const f = arr(st.fl), s = arr(st.sel);
+  r.fl = zeros().map((_, i) => +f[i] || 0);
+  r.sel = zeros().map((_, i) => +s[i] || 0);
+  r.round = +st.round || 1; r.hit = st.hit == null ? -1 : +st.hit;
+  r.peers = st.peers || {};
+  return r;
+}
+
+/* ---------- logica di gioco ---------- */
+function deal(list) {
+  const d = shuffle(list.map(clean).filter(c => c.n));
+  return { cards: d.slice(0, 12), hand: d.slice(12, 17), pile: d.slice(17), sx: encS(rnd(12)), clues: [], round: 1, phase: 'clue', fl: zeros(), sel: zeros(), hit: -1, deal: Date.now() };
+}
+function push(p) {
+  Object.assign(S.room, p);
+  S.room = normRoom(S.room);
+  render();
+  S.t.patch(p).catch(e => flash(errText(e)));
+}
+const roundInfo = r => {
+  const need = NEED[r.round - 1] || 1;
+  const done = r.fl.filter(x => x === r.round).length;
+  const nSel = r.sel.filter(Boolean).length;
+  return { need, done, nSel, left: need - done };
+};
+function selectCard(i) {
+  const r = S.room; if (r.phase !== 'flip' || r.fl[i] || r.sel[i]) return;
+  const { left, nSel } = roundInfo(r);
+  if (nSel >= left) { flash(left === 1 ? 'Potete selezionare una sola carta: giratela o annullate la selezione.' : `Potete selezionare al massimo ${left} carte: giratele o annullate la selezione.`); return; }
+  const sel = r.sel.slice(); sel[i] = 1; push({ sel });
+}
+function flipCard(i) {
+  const r = S.room; if (r.phase !== 'flip' || !r.sel[i] || r.fl[i]) return;
+  const sel = r.sel.slice(); sel[i] = 0;
+  const fl = r.fl.slice(); fl[i] = r.round;
+  if (i === decS(r.sx)) { push({ fl, sel: zeros(), phase: 'lost', hit: i }); return; }
+  const need = NEED[r.round - 1];
+  if (fl.filter(x => x === r.round).length >= need) {
+    if (r.round >= 5) { push({ fl, sel: zeros(), phase: 'won' }); return; }
+    const hand = r.hand.slice(), pile = r.pile.slice();
+    if (pile.length) hand.push(pile.shift());
+    push({ fl, sel: zeros(), round: r.round + 1, phase: 'clue', hand, pile });
+  } else push({ fl, sel });
+}
+function playClue(k) {
+  const r = S.room, i = S.ui.hand;
+  if (r.phase !== 'clue' || i == null || !r.hand[i]) return;
+  const hand = r.hand.slice(); const [c] = hand.splice(i, 1);
+  const clues = r.clues.map(clean).map((x, j) => ({ ...x, k: r.clues[j].k })).concat([{ ...clean(c), k }]);
+  S.ui.hand = null;
+  push({ hand, clues, phase: 'flip', sel: zeros() });
+}
+function newGame() {
+  const r = S.room;
+  const all = [...r.cards, ...r.hand, ...r.pile, ...r.clues].map(clean);
+  S.ui.hand = null; S.ui.menu = false; S.ui.confirmExit = false;
+  push(deal(all));
+}
+
+/* ---------- sessione ---------- */
+function setHash(h) { history.replaceState(null, '', h ? '#' + h : location.pathname + location.search); }
+function saveSession() { try { sessionStorage.setItem(SS_SES, JSON.stringify(S.session)); } catch {} }
+async function enterGame(session) {
+  S.session = session; saveSession();
+  setHash(session.mode === 'local' ? 'locale=' + session.role : `stanza=${session.code}&ruolo=${session.role}`);
+  S.view = 'game'; S.room = null; S.loaded = false; S.ui.err = ''; S.ui.hideWait = false; S.ui.menu = false; S.ui.confirmExit = false; S.ui.hand = null;
+  render();
+  try {
+    S.t = session.mode === 'local' ? new LocalLink() : new FbLink(session.code);
+    await S.t.open(st => {
+      if (!st) {
+        if (S.loaded) { goHome(session.mode === 'local' ? 'La partita su questo PC è stata chiusa.' : 'La partita è stata chiusa.'); }
+        else { S.ui.err = session.mode === 'local' ? 'Nessuna partita aperta su questo PC. Avviala dalla pagina iniziale.' : 'Stanza non trovata: controlla il codice.'; render(); }
+        return;
+      }
+      const prev = S.room && S.room.deal;
+      S.room = normRoom(st); S.loaded = true;
+      if (prev && prev !== S.room.deal) S.ui.hand = null;
+      render();
+    });
+    if (session.mode === 'fb') await S.t.presence(session.role);
+  } catch (e) { S.ui.err = errText(e); render(); }
+}
+function goHome(msg = '') {
+  try { S.t && S.t.close(); } catch {}
+  S.t = null; S.session = null; S.room = null; S.loaded = false;
+  try { sessionStorage.removeItem(SS_SES); } catch {}
+  setHash(''); S.view = 'home'; S.ui.menu = false; S.ui.confirmExit = false;
+  S.ui.msg = msg; S.ui.msgOk = false;
+  render();
+}
+async function exitGame() {
+  const t = S.t;
+  try { if (t) { t.close(); await t.destroy(); } } catch (e) { console.warn(e); }
+  S.t = null; goHome();
+}
+
+async function startGame() {
+  const p = S.pref, d = deckById(p.deck);
+  if (!d) return setMsg('Scegli un mazzo.');
+  let syncFail = false;
+  if (d.src) {
+    S.ui.busy = true; setMsg('Aggiorno il mazzo dal Foglio Google…', true);
+    try { const fresh = rowsToCards(await fetchSheet(d.src)); if (fresh.length) { d.cards = fresh; d.synced = Date.now(); saveDecks(); } }
+    catch { syncFail = true; }
+    S.ui.busy = false; S.ui.msg = '';
+  }
+  const cards = d.cards.map(clean).filter(c => c.n);
+  if (cards.length < MIN_CARDS) return setMsg(`Il mazzo «${d.name}» ha ${cards.length} carte: ne servono almeno ${MIN_CARDS}.`);
+  const st = { v: 1, deckName: d.name, ...deal(cards) };
+  if (p.mode === 'local' || !fbConfig()) {
+    st.code = 'locale'; st.createdAt = Date.now();
+    try { lsSet(LS_LOCAL, st); } catch { return setMsg('Spazio esaurito in questo browser: il mazzo ha troppe immagini caricate.'); }
+    S.ui.opened = false;
+    await enterGame({ mode: 'local', role: p.role });
+    if (syncFail) flash('Non riesco a leggere il Foglio Google: uso l’ultima copia del mazzo.');
+    return;
+  }
+  S.ui.busy = true; setMsg('Creo la stanza…', true);
+  try {
+    const F = await fb();
+    await cleanupRooms(F);
+    const code = await freeCode(F);
+    st.code = code; st.createdAt = F.serverTimestamp();
+    await F.set(F.ref(F.db, 'rooms/' + code), st);
+    S.ui.busy = false; S.ui.msg = '';
+    enterGame({ mode: 'fb', code, role: p.role });
+  } catch (e) { S.ui.busy = false; setMsg(errText(e)); }
+}
+async function joinGame(code, role) {
+  code = String(code || '').replace(/\D/g, '');
+  if (code.length !== 5) return setMsg('Il codice della stanza ha 5 cifre.');
+  if (role) { S.ui.joinAsk = null; return enterGame({ mode: 'fb', code, role }); }
+  S.ui.busy = true; setMsg('Cerco la stanza…', true);
+  try {
+    const F = await fb();
+    const s = await F.get(F.ref(F.db, 'rooms/' + code));
+    S.ui.busy = false;
+    if (!s.exists()) return setMsg('Stanza non trovata: controlla il codice.');
+    const peers = (s.val() && s.val().peers) || {};
+    if (peers.lim && !peers.sugg) return joinGame(code, 'sugg');
+    if (peers.sugg && !peers.lim) return joinGame(code, 'lim');
+    S.ui.joinAsk = code; S.ui.msg = ''; render();
+  } catch (e) { S.ui.busy = false; setMsg(errText(e)); }
+}
+function joinUrl(code) { return location.origin + location.pathname + '#entra=' + code; }
+function openOther() {
+  const other = S.session.role === 'lim' ? 'sugg' : 'lim';
+  const url = location.origin + location.pathname + location.search + '#locale=' + other;
+  const feat = other === 'lim' ? 'popup=yes,width=1280,height=760' : 'popup=yes,width=480,height=900';
+  const w = window.open(url, 'somiglianze-' + other, feat);
+  S.ui.opened = true;
+  if (!w) flash('Il browser ha bloccato la finestra: consenti i popup per questo sito, oppure apri a mano il link indicato.');
+  render();
+}
+
+/* ---------- importazione mazzi ---------- */
+function parseCSV(txt) {
+  txt = txt.replace(/^﻿/, '');
+  const first = txt.split(/\r?\n/)[0] || '';
+  const cnt = ch => first.split(ch).length - 1;
+  const d = [';', ',', '\t'].sort((a, b) => cnt(b) - cnt(a))[0];
+  const rows = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < txt.length; i++) {
+    const c = txt[i];
+    if (q) {
+      if (c === '"') { if (txt[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+      else cell += c;
+    } else if (c === '"') q = true;
+    else if (c === d) { row.push(cell); cell = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && txt[i + 1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; }
+    else cell += c;
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+function rowsToCards(rows) {
+  rows = rows.map(r => (r || []).map(c => String(c ?? '').trim())).filter(r => r.some(Boolean));
+  if (!rows.length) return [];
+  const isUrl = v => /^(https?:\/\/|data:image)/i.test(v || '');
+  const hdr = rows[0].map(c => c.toLowerCase());
+  const hn = hdr.findIndex(c => /^(nome|nomi|name|carta|carte|testo|parola|parole|personaggio|personaggi|titolo)$/.test(c));
+  const hi = hdr.findIndex(c => /^(immagine|immagini|image|img|foto|url|link|figura)$/.test(c));
+  let ni = 0, ii = -1, start = 0;
+  if (hn >= 0 || hi >= 0) { start = 1; ni = hn >= 0 ? hn : (hi === 0 ? 1 : 0); ii = hi; }
+  else { const k = rows.slice(0, 6).reduce((a, r) => a < 0 ? r.findIndex((c, j) => j > 0 && isUrl(c)) : a, -1); ii = k; }
+  const out = [];
+  for (const r of rows.slice(start)) {
+    const n = (r[ni] || '').trim(); if (!n || isUrl(n)) continue;
+    const img = ii >= 0 ? safeImg(r[ii]) : '';
+    out.push(img ? { n, img } : { n });
+  }
+  return out;
+}
+let XLSXP = null;
+function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
+async function loadXLSX() {
+  if (window.XLSX) return window.XLSX;
+  if (!XLSXP) XLSXP = loadScript('https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js')
+    .catch(() => loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'));
+  await XLSXP; return window.XLSX;
+}
+async function readTable(file) {
+  const name = file.name.toLowerCase();
+  const buf = await file.arrayBuffer();
+  if (/\.(xlsx|xlsm|xls|ods)$/.test(name)) {
+    const X = await loadXLSX();
+    const wb = X.read(buf, { type: 'array' });
+    return X.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: '', raw: false });
+  }
+  let txt;
+  try { txt = new TextDecoder('utf-8', { fatal: true }).decode(buf); } catch { txt = new TextDecoder('windows-1252').decode(buf); }
+  return parseCSV(txt);
+}
+function sheetUrls(u) {
+  u = u.trim();
+  const gid = (u.match(/[#&?]gid=(\d+)/) || [])[1];
+  let m = u.match(/\/spreadsheets\/d\/e\/([\w-]+)/);
+  if (m) return [`https://docs.google.com/spreadsheets/d/e/${m[1]}/pub?output=csv${gid ? '&gid=' + gid : ''}`];
+  m = u.match(/\/spreadsheets\/d\/([\w-]+)/);
+  if (m) return [`https://docs.google.com/spreadsheets/d/${m[1]}/gviz/tq?tqx=out:csv${gid ? '&gid=' + gid : ''}`, `https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv${gid ? '&gid=' + gid : ''}`];
+  return /^https?:\/\//.test(u) ? [u] : [];
+}
+async function fetchSheet(u) {
+  const urls = sheetUrls(u);
+  if (!urls.length) throw new Error('Il link non sembra un Foglio Google.');
+  for (const url of urls) {
+    try {
+      const r = await fetch(url); if (!r.ok) continue;
+      const t = await r.text();
+      if (/^\s*<(!doctype|html)/i.test(t)) continue;
+      return parseCSV(t);
+    } catch {}
+  }
+  throw new Error('Non riesco a leggere il foglio. Condividilo con «Chiunque abbia il link» (lettore) oppure pubblicalo sul web (File › Condividi › Pubblica sul web).');
+}
+function fileToDataUrl(file, max = 480) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        const s = Math.min(1, max / Math.max(im.width, im.height));
+        const c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
+        const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height);
+        res(c.toDataURL('image/jpeg', 0.8));
+      };
+      im.onerror = () => rej(new Error('Immagine non valida'));
+      im.src = fr.result;
+    };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  });
+}
+function exportCSV(d) {
+  const q = v => /[",;\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  const txt = 'nome,immagine\n' + d.cards.map(c => q(c.n) + ',' + q(c.img || '')).join('\n');
+  downloadText((d.name.replace(/[^\w\-àèéìòù ]+/gi, '').trim() || 'mazzo') + '.csv', txt);
+}
+
+/* ---------- QR ---------- */
+let QRP = null; const qrCache = {};
+async function fillQRs() {
+  const els = document.querySelectorAll('[data-qr]'); if (!els.length) return;
+  try {
+    if (!window.qrcode) { if (!QRP) QRP = loadScript('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'); await QRP; }
+    els.forEach(el => {
+      const u = el.dataset.qr;
+      if (!qrCache[u]) { const q = window.qrcode(0, 'M'); q.addData(u); q.make(); qrCache[u] = q.createSvgTag(4, 2); }
+      if (!el.innerHTML) el.innerHTML = qrCache[u];
+    });
+  } catch { els.forEach(el => { el.style.display = 'none'; }); }
+}
+
+/* =====================================================================
+   VISTE
+   ===================================================================== */
+function deckOpt(d, p) {
+  const n = d.cards.length, ok = n >= MIN_CARDS;
+  return `<button class="opt" data-act="pick" data-k="deck" data-v="${d.id}" aria-pressed="${p.deck === d.id}"><b>${esc(d.name)}</b><small>${n} carte${ok ? '' : ` · <span class="warn">ne servono almeno ${MIN_CARDS}</span>`}</small><span>${d.temp ? '<span class="badge">solo per questa lezione</span>' : ''}${d.src ? '<span class="badge">Foglio Google</span>' : ''}</span></button>`;
+}
+function emptyDecks(fileId) {
+  return `<div class="empty">
+    <p><b>Non hai ancora mazzi.</b> Crea il tuo primo mazzo: servono almeno ${MIN_CARDS} carte.</p>
+    <div class="row">
+      <button class="btn sm or" data-act="newDeck">Crea un mazzo</button>
+      <button class="btn sm ink" data-act="pickFile" data-for="${fileId}">Importa CSV o Excel</button>
+      <input type="file" id="${fileId}" data-file="newDeck" accept="${FILE_ACCEPT}" hidden>
+      <button class="btn sm ink" data-act="goSheet">Importa da Foglio Google</button>
+    </div>
+    <p class="muted" style="margin-top:12px">Non sai da dove partire? <button class="lnk" data-act="template">Scarica il modello CSV</button></p>
+  </div>`;
+}
+function siteFoot() {
+  return `<footer class="foot mono">Somiglianze v${VERSION} · <button class="lnk" data-act="guide" data-anchor="g-info">Informazioni e note legali</button></footer>`;
+}
+function vHome() {
+  const p = S.pref, fc = fbConfig();
+  if (!deckById(p.deck) && S.decks[0]) p.deck = S.decks[0].id;
+  if (p.mode === 'fb' && !fc) p.mode = 'local';
+  const has = S.decks.length > 0;
+  const ask = S.ui.joinAsk;
+  const join = fc ? `<section class="panel" aria-labelledby="h-join">
+        <h2 id="h-join">Entra in una partita</h2>
+        <p class="muted">Hai un codice stanza creato su un altro dispositivo?</p>
+        ${ask ? `<p><b>Stanza ${esc(ask)}</b>: questo dispositivo è…</p>
+          <div class="opts"><button class="opt" data-act="joinAs" data-v="lim"><b>La LIM</b></button><button class="opt" data-act="joinAs" data-v="sugg"><b>Il suggeritore</b></button></div>
+          <div class="row" style="margin-top:8px"><button class="lnk" data-act="joinCancel">Annulla</button></div>`
+        : `<label class="fl" for="joinCode">Codice stanza</label>
+          <div class="row"><input id="joinCode" class="code" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="00000"><button class="btn" data-act="join">Entra</button></div>`}
+      </section>` : '';
+  return `<div class="page">
+  <header class="ph">${LOGO(52)}<span class="title">SOMIGLIANZE</span><button class="btn sm ghost back" data-act="guide">Come funziona</button></header>
+  <div class="homegrid">
+    <section class="panel" aria-labelledby="h-new">
+      <h2 id="h-new">Nuova partita</h2>
+      <div class="step"><span class="stepn mono">1</span>Scegli il mazzo</div>
+      ${has ? `<div class="decklist">${S.decks.map(d => deckOpt(d, p)).join('')}</div>
+      <div class="row" style="margin-top:10px"><button class="lnk" data-act="go" data-v="decks">Gestisci i mazzi: crea, importa, modifica</button></div>` : emptyDecks('fNewH')}
+      <div class="step"><span class="stepn mono">2</span>Dove giocate?</div>
+      <div class="opts">
+        <button class="opt" data-act="pick" data-k="mode" data-v="local" aria-pressed="${p.mode === 'local'}"><b>Stesso PC</b><small>La LIM fa da secondo schermo: due finestre sullo stesso computer.</small></button>
+        <button class="opt" data-act="pick" data-k="mode" data-v="fb" aria-pressed="${p.mode === 'fb'}" ${fc ? '' : 'disabled'}><b>Due dispositivi</b><small>LIM e telefono collegati con un codice stanza.</small>${fc ? '' : '<span class="soon">Presto disponibile</span>'}</button>
+      </div>
+      <div class="step"><span class="stepn mono">3</span>Questo schermo è…</div>
+      <div class="opts">
+        <button class="opt" data-act="pick" data-k="role" data-v="lim" aria-pressed="${p.role === 'lim'}"><b>La LIM dei giocatori</b><small>Mostra le 12 carte da girare.</small></button>
+        <button class="opt" data-act="pick" data-k="role" data-v="sugg" aria-pressed="${p.role === 'sugg'}"><b>Il suggeritore</b><small>Vede la carta segreta e gioca gli indizi.</small></button>
+      </div>
+      <div class="row" style="margin-top:24px"><button class="btn or" data-act="start" ${S.ui.busy || !has ? 'disabled' : ''}>Inizia la partita</button></div>
+      ${S.ui.msg ? `<div class="msg ${S.ui.msgOk ? 'ok' : ''}" role="status">${esc(S.ui.msg)}</div>` : ''}
+    </section>
+    <div class="col side">
+      ${join}
+      <section class="panel" aria-labelledby="h-first">
+        <h2 id="h-first">Prima volta?</h2>
+        <ol class="steps">
+          <li>Prepara un mazzo di almeno ${MIN_CARDS} carte: a mano, da un file o da un Foglio Google.</li>
+          <li>Collega il PC alla LIM come schermo esteso.</li>
+          <li>Avvia la partita e porta la finestra dei giocatori sulla LIM.</li>
+        </ol>
+        <button class="btn sm ink" data-act="guide">Leggi come funziona</button>
+      </section>
+      <section class="panel" aria-labelledby="h-data">
+        <h2 id="h-data">I tuoi mazzi restano qui</h2>
+        <p>Niente viene caricato sul sito: i mazzi restano solo in questo browser. Sui PC condivisi scegli «Solo per questa lezione», oppure elimina i mazzi a fine ora.</p>
+        <button class="lnk" data-act="go" data-v="decks">Gestisci i mazzi</button>
+      </section>
+    </div>
+  </div>
+  ${siteFoot()}
+</div>`;
+}
+function vGuide() {
+  return `<div class="page">
+  <header class="ph">${LOGO(44)}<span class="title" style="font-size:38px">SOMIGLIANZE</span><button class="btn sm ghost back" data-act="go" data-v="home">Torna alla partita</button></header>
+  <section class="panel guide">
+    <h2>Come funziona</h2>
+    <nav class="toc" aria-label="Sezioni">
+      <button class="lnk" data-act="jump" data-anchor="g-mazzo">Preparare un mazzo</button> ·
+      <button class="lnk" data-act="jump" data-anchor="g-dati">Dove restano i mazzi</button> ·
+      <button class="lnk" data-act="jump" data-anchor="g-lim">Giocare con la LIM</button> ·
+      <button class="lnk" data-act="jump" data-anchor="g-regole">Regole</button> ·
+      <button class="lnk" data-act="jump" data-anchor="g-info">Informazioni</button>
+    </nav>
+
+    <div class="gsec" id="g-mazzo">
+      <h3>1. Preparare un mazzo</h3>
+      <p>Ogni carta è un testo (un personaggio, una parola, un luogo, un concetto) e, se vuoi, un’immagine. Servono almeno ${MIN_CARDS} carte: 12 vanno sul tavolo, le altre al suggeritore per dare gli indizi. Più carte metti, più le partite saranno varie.</p>
+      <ul>
+        <li><b>A mano</b>: in «Gestisci i mazzi» crea un mazzo e aggiungi le carte una per una.</li>
+        <li><b>Da un file CSV o Excel</b>: una colonna <b>nome</b> e, se vuoi, una colonna <b>immagine</b> con il link a una foto. La prima riga può contenere le intestazioni. <button class="lnk" data-act="template">Scarica il modello CSV</button></li>
+        <li><b>Da un Foglio Google</b>: condividi il foglio con «Chiunque abbia il link» (lettore) oppure pubblicalo sul web, poi incolla il link. Se lo lasci <b>collegato</b>, a ogni partita le carte vengono ricaricate dal foglio: basta modificare il foglio per aggiornare il mazzo.</li>
+        <li><b>Immagini</b>: puoi incollare un link (vanno bene i file di Google Drive condivisi con chiunque abbia il link) oppure caricare una foto. Le foto caricate occupano spazio nel browser: per mazzi con molte immagini meglio i link.</li>
+      </ul>
+    </div>
+
+    <div class="gsec" id="g-dati">
+      <h3>2. Dove restano i mazzi</h3>
+      <p>Somiglianze non ha account e non carica niente sul sito: i mazzi restano nel browser che stai usando. Per ogni mazzo puoi scegliere:</p>
+      <ul>
+        <li><b>Salvato su questo dispositivo</b>: lo ritrovi la prossima volta, sullo stesso computer e con lo stesso browser.</li>
+        <li><b>Solo per questa lezione</b>: sparisce quando chiudi la scheda.</li>
+      </ul>
+      <div class="note"><b>Sui PC condivisi</b> (per esempio quelli delle LIM) chi usa lo stesso browser dopo di te vede i mazzi salvati. Scegli «Solo per questa lezione», oppure a fine ora usa «Elimina tutti i miei mazzi da questo PC» in fondo a «Gestisci i mazzi». La soluzione più comoda è tenere il mazzo in un tuo Foglio Google e importarlo dal link quando serve.</div>
+      <p>Per portare un mazzo su un altro computer usa «Esporta CSV» e poi importa il file. La partita in corso resta sul PC finché non la chiudi dal menu, e comunque viene cancellata dopo ${LOCAL_MAX_HOURS} ore.</p>
+    </div>
+
+    <div class="gsec" id="g-lim">
+      <h3>3. Giocare con la LIM</h3>
+      <ol>
+        <li>Collega il PC alla LIM come <b>schermo esteso</b> (su Windows: <kbd>Win</kbd> + <kbd>P</kbd> › «Estendi»), così la LIM mostra una cosa e il monitor del PC un’altra.</li>
+        <li>Nella pagina iniziale scegli il mazzo e indica cosa c’è su questo schermo, di solito «Il suggeritore». Premi «Inizia la partita».</li>
+        <li>Premi «Apri la finestra della LIM». Se il browser la blocca, consenti i popup per questo sito.</li>
+        <li>Porta la nuova finestra sulla LIM, trascinandola oppure con <kbd>Win</kbd> + <kbd>Maiusc</kbd> + <kbd>→</kbd>, e dal suo «menu» scegli «Schermo intero» (oppure <kbd>F11</kbd>).</li>
+        <li>Tu scegli gli indizi sul monitor del PC, la classe tocca le carte sulla LIM.</li>
+      </ol>
+      <p>Il gioco su due dispositivi separati (LIM e telefono) arriverà in una prossima versione.</p>
+    </div>
+
+    <div class="gsec" id="g-regole">
+      <h3>4. Regole del gioco</h3>
+      <ul>${RULES_HTML}</ul>
+    </div>
+
+    <div class="gsec" id="g-info">
+      <h3>5. Informazioni e note legali</h3>
+      <p>${esc(DISCLAIMER)}</p>
+      <p><b>Privacy.</b> Somiglianze non usa account, non raccoglie dati personali e non invia mazzi o partite a nessun server: tutto resta nel browser. Per funzionare scarica da internet i caratteri tipografici (Google Fonts) e, solo quando servono, la libreria per leggere i file Excel. I Fogli Google vengono letti direttamente da Google.</p>
+      <p class="muted mono" style="font-size:14px">Somiglianze v${VERSION}</p>
+    </div>
+  </section>
+  ${siteFoot()}
+</div>`;
+}
+function keepOpts() {
+  const k = S.pref.keep;
+  return `<div class="opts" style="margin-top:6px">
+    <button class="opt" data-act="pick" data-k="keep" data-v="device" aria-pressed="${k === 'device'}"><b>Salvali su questo dispositivo</b><small>Li ritrovi la prossima volta su questo browser.</small></button>
+    <button class="opt" data-act="pick" data-k="keep" data-v="lesson" aria-pressed="${k === 'lesson'}"><b>Solo per questa lezione</b><small>Spariscono quando chiudi la scheda. Ideale sui PC condivisi.</small></button>
+  </div>`;
+}
+function vDecks() {
+  const list = S.decks.map(d => `<div class="dkrow">
+      <div class="nm2">${esc(d.name)}<small>${d.cards.length} carte${d.cards.length < MIN_CARDS ? ` · ne servono almeno ${MIN_CARDS}` : ''}${d.cards.some(c => c.img) ? ' · con immagini' : ''}</small>
+        <span><span class="badge ${d.temp ? 'or' : ''}">${storeLabel(d)}</span>${d.src ? '<span class="badge">collegato a un Foglio Google</span>' : ''}</span></div>
+      <button class="btn sm ink" data-act="edit" data-id="${d.id}">Modifica</button>
+      ${d.src ? `<button class="iconbtn" data-act="syncDeck" data-id="${d.id}">Aggiorna dal foglio</button>` : ''}
+      <button class="iconbtn" data-act="toggleTemp" data-id="${d.id}">${d.temp ? 'Salva su questo dispositivo' : 'Tieni solo per questa lezione'}</button>
+      <button class="iconbtn" data-act="export" data-id="${d.id}">Esporta CSV</button>
+      ${S.ui.delAsk === d.id ? `<button class="iconbtn" data-act="delDeck" data-id="${d.id}" style="background:var(--or)">Conferma eliminazione</button>` : `<button class="iconbtn" data-act="delAsk" data-id="${d.id}">Elimina</button>`}
+    </div>`).join('');
+  return `<div class="page">
+  <header class="ph">${LOGO(44)}<span class="title" style="font-size:38px">SOMIGLIANZE</span><button class="btn sm ghost back" data-act="go" data-v="home">Torna alla partita</button></header>
+  <section class="panel">
+    <h2>I miei mazzi</h2>
+    <p class="muted">I mazzi restano solo in questo browser: niente viene caricato sul sito.</p>
+    <h3>Dove tengo i nuovi mazzi?</h3>
+    ${keepOpts()}
+    <div class="row" style="margin:20px 0 18px">
+      <button class="btn sm ink" data-act="newDeck">Nuovo mazzo vuoto</button>
+      <button class="btn sm ink" data-act="pickFile" data-for="fNew">Importa CSV o Excel</button>
+      <input type="file" id="fNew" data-file="newDeck" accept="${FILE_ACCEPT}" hidden>
+      <button class="btn sm ink" data-act="gsToggle">Importa da Foglio Google</button>
+      <button class="lnk" data-act="template">Scarica il modello CSV</button>
+    </div>
+    ${S.ui.gsOpen ? gsBox('newDeck') : ''}
+    ${S.ui.msg ? `<div class="msg ${S.ui.msgOk ? 'ok' : ''}" role="status" style="margin-bottom:14px">${esc(S.ui.msg)}</div>` : ''}
+    <div class="dk">${list || '<p class="muted">Non hai ancora mazzi.</p>'}</div>
+    <h3>Come preparare il file</h3>
+    <p class="muted">Una colonna <b>nome</b> con il testo della carta e, se vuoi, una colonna <b>immagine</b> con il link a una foto. Vanno bene i link di Google Drive se il file è condiviso con chiunque abbia il link. La prima riga può contenere le intestazioni.</p>
+    <div class="danger">
+      <h3 style="margin-top:0">Hai finito su un PC condiviso?</h3>
+      <p class="muted">Cancella da questo browser tutti i mazzi, le preferenze e l’eventuale partita in corso.</p>
+      ${S.ui.wipeAsk ? `<div class="row"><button class="btn sm or" data-act="wipe">Sì, elimina tutto</button><button class="lnk" data-act="wipeNo">Annulla</button></div>`
+        : `<button class="btn sm ink" data-act="wipeAsk" ${S.decks.length ? '' : 'disabled'}>Elimina tutti i miei mazzi da questo PC</button>`}
+    </div>
+  </section>
+  ${siteFoot()}
+</div>`;
+}
+function gsBox(target) {
+  return `<div class="addbox">
+    <label class="fl" for="gsUrl">Link del Foglio Google</label>
+    <div class="row"><input id="gsUrl" class="grow" type="url" placeholder="https://docs.google.com/spreadsheets/d/…" data-target="${target}"><button class="btn sm or" data-act="importSheet" data-target="${target}">Importa</button></div>
+    ${target === 'newDeck' ? `<label class="chk"><input type="checkbox" id="gsLink" ${S.ui.gsLink ? 'checked' : ''}> Tieni il mazzo collegato al foglio: a ogni partita le carte vengono ricaricate da lì</label>` : ''}
+    <p class="muted small" style="margin:8px 0 0">Il foglio deve essere condiviso con «Chiunque abbia il link» oppure pubblicato sul web. Si legge il primo foglio, o quello indicato nel link.</p>
+  </div>`;
+}
+function vEdit() {
+  const d = deckById(S.editId); if (!d) { S.view = 'decks'; return vDecks(); }
+  const rows = d.cards.map((c, i) => `<div class="crow">
+      <span class="idx">${pad(i + 1)}</span>
+      <span class="thumb" ${c.img ? `style="background-image:url('${esc(c.img.replace(/'/g, '%27'))}')"` : ''}>${c.img ? '' : 'testo'}</span>
+      <input type="text" value="${esc(c.n)}" data-edit="n" data-i="${i}" aria-label="Nome della carta ${i + 1}">
+      <input class="curl" type="url" value="${c.img && !c.img.startsWith('data:') ? esc(c.img) : ''}" placeholder="${c.img && c.img.startsWith('data:') ? 'foto caricata' : 'link immagine (facoltativo)'}" data-edit="img" data-i="${i}" aria-label="Immagine della carta ${i + 1}">
+      <button class="iconbtn" data-act="pickFile" data-for="fRow${i}" aria-label="Carica una foto per la carta ${i + 1}">Foto</button><input type="file" id="fRow${i}" data-file="rowImg" data-i="${i}" accept="image/*" hidden>
+      <button class="iconbtn" data-act="delCard" data-i="${i}" aria-label="Elimina la carta ${i + 1}">${ICO_X}</button>
+    </div>`).join('');
+  const n = d.cards.length;
+  return `<div class="page">
+  <header class="ph">${LOGO(44)}<span class="title" style="font-size:38px">SOMIGLIANZE</span><button class="btn sm ghost back" data-act="go" data-v="decks">I miei mazzi</button></header>
+  <section class="panel">
+    <label class="fl" for="dname">Nome del mazzo</label>
+    <input id="dname" type="text" value="${esc(d.name)}" data-edit="name">
+    <p style="margin-top:12px"><b>${n} carte</b> ${n < MIN_CARDS ? `<span class="warn">· ne servono almeno ${MIN_CARDS} (12 sul tavolo e 9 per il suggeritore)</span>` : '<span class="muted">· pronto per giocare</span>'}</p>
+    <div class="row"><span class="badge ${d.temp ? 'or' : ''}" style="margin:0">${storeLabel(d)}</span><button class="lnk" data-act="toggleTemp" data-id="${d.id}">${d.temp ? 'Salva su questo dispositivo' : 'Tieni solo per questa lezione'}</button></div>
+    ${d.src ? `<div class="note"><b>Collegato a un Foglio Google.</b> A ogni partita le carte vengono ricaricate dal foglio: le modifiche fatte qui verranno sostituite. Per cambiare il mazzo modifica il foglio.
+      <div class="row" style="margin-top:8px"><button class="btn sm ink" data-act="syncDeck" data-id="${d.id}">Aggiorna ora</button><button class="lnk" data-act="unlink" data-id="${d.id}">Scollega dal foglio</button></div></div>` : ''}
+    <div class="addbox">
+      <h3 style="margin-top:0">Aggiungi una carta</h3>
+      <div class="row">
+        <input id="addN" class="grow" type="text" placeholder="Nome, per esempio: Cristoforo Colombo" aria-label="Nome della nuova carta">
+        <input id="addImg" class="grow" type="url" placeholder="Link immagine (facoltativo)" aria-label="Link immagine della nuova carta">
+        <button class="iconbtn" data-act="pickFile" data-for="fAdd">${S.ui.addImgData ? 'Foto pronta' : 'Carica foto'}</button><input type="file" id="fAdd" data-file="addImg" accept="image/*" hidden>
+        <button class="btn sm or" data-act="addCard">Aggiungi</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn sm ink" data-act="pickFile" data-for="fApp">Aggiungi da CSV o Excel</button>
+      <input type="file" id="fApp" data-file="appendDeck" accept="${FILE_ACCEPT}" hidden>
+      <button class="btn sm ink" data-act="gsToggle">Aggiungi da Foglio Google</button>
+      <button class="btn sm ink" data-act="export" data-id="${d.id}">Esporta CSV</button>
+    </div>
+    ${S.ui.gsOpen ? gsBox('appendDeck') : ''}
+    ${S.ui.msg ? `<div class="msg ${S.ui.msgOk ? 'ok' : ''}" role="status">${esc(S.ui.msg)}</div>` : ''}
+    <div class="cardrows">${rows || '<p class="muted">Il mazzo è vuoto.</p>'}</div>
+  </section>
+</div>`;
+}
+
+/* ---------- LIM ---------- */
+function clueCard(c, k = 1) {
+  const img = c.img ? `<img class="cimg" src="${esc(c.img)}" alt="">` : '';
+  return `<div class="cc ${c.k === 'd' ? 'h' : 'v'}" data-fit>${img}${nameSpan(c.n, (c.img ? 0.55 : 0.72) * k)}</div>`;
+}
+function chips(list) {
+  return list.map(c => `<span class="chip">${c.k === 'd' ? ICO_V('#0D2A23', 16, 11) : ICO_V()}${esc(c.n)}<span class="sr">${c.k === 'd' ? ' (diversa)' : ' (simile)'}</span></span>`).join('');
+}
+function limCard(c, i, r, sec) {
+  const num = pad(i + 1), ph = r.phase;
+  const img = c.img ? `<img class="cimg" src="${esc(c.img)}" alt="">` : '';
+  const nm = nameSpan(c.n, c.img ? 0.68 : 1);
+  if (ph === 'lost' && i === r.hit) return `<div class="card hit" data-fit><span class="tag">ERA LA SEGRETA</span><span class="cbody">${img}${nm}</span></div>`;
+  if (r.fl[i]) return `<div class="cardout dots"><span class="mono">${num} · girata</span></div>`;
+  if (ph === 'won' && i === sec) return `<div class="card hit" data-fit><span class="tag">LA SEGRETA</span><span class="cbody">${img}${nm}</span></div>`;
+  if (r.sel[i]) return `<button class="card sel" data-fit data-act="flip" data-i="${i}" aria-label="${esc(c.n)}: selezionata. Tocca di nuovo per girarla"><span class="cnum" aria-hidden="true">${num}</span><span class="stamp" aria-hidden="true">GIRA</span><span class="cbody">${img}${nm}</span></button>`;
+  return `<button class="card" data-fit data-act="sel" data-i="${i}" ${ph === 'flip' ? '' : 'disabled'} aria-label="${esc(c.n)}"><span class="cnum" aria-hidden="true">${num}</span><span class="cbody">${img}${nm}</span></button>`;
+}
+function statusChip() {
+  const s = S.session, r = S.room;
+  if (s.mode === 'local') return `<span class="chipc mono"><span class="dot on"></span>stesso PC</span>`;
+  const other = s.role === 'lim' ? 'sugg' : 'lim';
+  const on = !!(r && r.peers && r.peers[other]);
+  return `<span class="chipc mono" title="${on ? 'Altro dispositivo collegato' : 'Altro dispositivo non collegato'}"><span class="dot ${on ? 'on' : ''}"></span>stanza ${esc(s.code)}<span class="sr">${on ? ', collegato' : ', in attesa'}</span></span>`;
+}
+function endButtons() {
+  return `<div class="endb"><button class="btn or" data-act="newGame">Nuova partita</button><button class="btn ghost" data-act="menu">Menu</button></div>`;
+}
+function vLim() {
+  const r = S.room, s = S.session, sec = decS(r.sx), ph = r.phase;
+  const { need, done, nSel } = roundInfo(r);
+  const last = r.clues[r.clues.length - 1];
+  const secName = r.cards[sec] ? r.cards[sec].n : '';
+  const sqs = [1, 2, 3, 4, 5].map(k => `<span class="sq ${k < r.round || (ph === 'won') ? 'done' : ''} ${k === r.round && ph !== 'won' ? 'cur' : ''}"></span>`).join('');
+  let box;
+  if (ph === 'clue') box = `<div class="cluebox"><span class="mono lbl">indizio del turno ${r.round}</span><div class="slotc mono">il suggeritore sta scegliendo…</div></div>`;
+  else if (last) box = `<div class="cluebox"><span class="mono lbl">${ph === 'flip' ? 'l’indizio di questo turno' : 'ultimo indizio'}</span>${clueCard(last)}<span class="mono kchip">${last.k === 'd' ? 'SDRAIATA = DIVERSA' : 'IN PIEDI = SIMILE'}</span></div>`;
+  else box = '';
+  const prevList = ph === 'clue' ? r.clues : r.clues.slice(0, -1);
+  const prev = prevList.length ? `<div class="prev"><span class="mono lbl">indizi precedenti</span><div class="chips">${chips(prevList)}</div></div>` : '';
+  let foot = '';
+  if (ph === 'flip') {
+    const slots = Array.from({ length: need }, (_, k) => `<span class="${k < done ? 'f' : k < done + nSel ? 's' : ''}"></span>`).join('');
+    foot = `<div class="big">Girate <span class="or">${done}</span> di ${need}</div>
+      <div class="mono hint">${S.ui.flash ? esc(S.ui.flash) : nSel ? 'tocca di nuovo per girare le carte arancio' : 'tocca una carta per selezionarla'}</div>
+      <div class="slots" style="grid-template-columns:repeat(${need},minmax(0,1fr))" aria-hidden="true">${slots}</div>`;
+  } else if (ph === 'clue') {
+    foot = `<div class="big sm">In attesa dell’indizio</div><div class="mono hint">poi girerete ${need} ${need === 1 ? 'carta' : 'carte'}</div>`;
+  } else if (ph === 'won') {
+    foot = `<div class="big or">Avete vinto!</div><div class="mono hint">la carta segreta era ${esc(secName)}</div>${endButtons()}`;
+  } else if (ph === 'lost') {
+    foot = `<div class="big or">Carta segreta girata!</div><div class="mono hint">partita persa · era ${esc(secName)}</div>${endButtons()}`;
+  }
+  let wait = '';
+  if (!S.ui.hideWait) {
+    if (s.mode === 'fb' && !r.peers.sugg) {
+      const u = joinUrl(s.code);
+      wait = `<div class="wait"><div class="waitbox"><div><h3>Collega il suggeritore</h3><ol><li>Sul telefono apri questo sito, oppure inquadra il QR</li><li>Tocca «Entra in una partita»</li><li>Scrivi il codice</li></ol><div class="bigcode">${esc(s.code)}</div><div class="row" style="margin-top:12px"><button class="btn sm ink" data-act="hideWait">Nascondi</button></div></div><div class="qr" data-qr="${esc(u)}" role="img" aria-label="QR per entrare nella stanza"></div></div></div>`;
+    } else if (s.mode === 'local' && !window.opener && !S.ui.opened) {
+      wait = `<div class="wait"><div class="waitbox"><div><h3>Apri la finestra del suggeritore</h3><p style="font-size:18px;margin:0 0 14px">Si apre sul tuo schermo; questa finestra resta sulla LIM. Usa il menu per lo schermo intero.</p><div class="row"><button class="btn or" data-act="openOther">Apri la finestra del suggeritore</button><button class="btn sm ink" data-act="hideWait">Nascondi</button></div></div></div></div>`;
+    }
+  }
+  return `<div class="limwrap"><div id="stage">
+  <header class="lhead">
+    <div class="lhl">
+      <div class="brand">${LOGO(48)}<span class="title">SOMIGLIANZE</span></div>
+      <div class="clr">${ph === 'flip' && nSel ? `<button class="clearbtn mono" data-act="clearSel">${ICO_X}Annulla selezione</button>` : ''}</div>
+    </div>
+    <div class="lhr">${statusChip()}<button class="menubtn mono" data-act="menu">menu</button></div>
+  </header>
+  <div class="lmain">
+    <div class="lgrid">${r.cards.map((c, i) => limCard(c, i, r, sec)).join('')}${wait}</div>
+    <aside class="laside" aria-live="polite">
+      <div class="turn"><b>${ph === 'won' || ph === 'lost' ? 'Fine partita' : `Turno ${r.round} di 5`}</b><div class="sqs" aria-hidden="true">${sqs}</div></div>
+      ${box}${prev}
+      <div class="lfoot">${foot}</div>
+    </aside>
+  </div>
+</div></div>`;
+}
+
+/* ---------- Suggeritore ---------- */
+function vSugg() {
+  const r = S.room, s = S.session, sec = decS(r.sx), ph = r.phase;
+  const { need, done, nSel } = roundInfo(r);
+  const sc = r.cards[sec] || { n: '?' };
+  let banner = '';
+  if (s.mode === 'fb' && !r.peers.lim && !S.ui.hideWait) {
+    banner = `<div class="banner"><div style="flex:1"><p><b>Collega la LIM</b>: apri il sito sulla LIM, tocca «Entra in una partita» e scrivi</p><div class="bigcode" style="font-size:34px">${esc(s.code)}</div><button class="lnk" data-act="hideWait">Nascondi</button></div><div class="qr sm" data-qr="${esc(joinUrl(s.code))}" role="img" aria-label="QR per entrare nella stanza"></div></div>`;
+  } else if (s.mode === 'local' && !window.opener && !S.ui.opened && !S.ui.hideWait) {
+    banner = `<div class="banner"><div style="flex:1"><p><b>Apri la finestra della LIM</b>, poi trascinala sulla LIM e mettila a schermo intero dal suo menu.</p><div class="row"><button class="btn sm or" data-act="openOther">Apri la finestra della LIM</button><button class="lnk" data-act="hideWait">Nascondi</button></div></div></div>`;
+  }
+  let main = '';
+  if (ph === 'clue') {
+    const hs = r.hand.map((c, i) => `<button class="hcard ${c.img ? 'wimg' : ''}" data-fit data-act="hand" data-i="${i}" aria-pressed="${S.ui.hand === i}">${c.img ? `<img class="cimg" src="${esc(c.img)}" alt="">` : ''}${nameSpan(c.n, c.img ? 0.55 : 0.7)}</button>`).join('');
+    const dis = S.ui.hand == null ? 'disabled' : '';
+    main = `<div class="sect mono">turno ${r.round} · scegli una carta dalla tua mano</div>
+      <div class="hand">${hs}${r.hand.length % 2 ? `<div class="hinfo mono">poi la classe girerà ${need} ${need === 1 ? 'carta' : 'carte'}</div>` : ''}</div>
+      <div class="kinds">
+        <button class="btn or kind" data-act="clue" data-k="s" ${dis}>${ICO_V('#0D2A23', 22, 32)}Gioca simile</button>
+        <button class="btn ink kind" data-act="clue" data-k="d" ${dis}>${ICO_V('#0D2A23', 32, 22)}Gioca diversa</button>
+      </div>`;
+  } else if (ph === 'flip') {
+    main = `<div class="sbox"><div class="big sm">La classe sta girando</div><div class="mono hint">girate ${done} di ${need} · selezionate ${nSel}</div></div>`;
+  } else {
+    main = `<div class="sbox"><div class="big or">${ph === 'won' ? 'La classe ha vinto!' : 'Carta segreta girata!'}</div><div class="mono hint">${ph === 'won' ? 'resta solo la carta segreta' : 'partita persa'}</div>${endButtons()}</div>`;
+  }
+  const board = r.cards.map((c, i) => {
+    const num = pad(i + 1);
+    if (r.fl[i] && !(ph === 'lost' && i === r.hit)) return `<div class="mc out dots"><span class="mn">${num}</span><span class="sr">${esc(c.n)}, girata</span></div>`;
+    const cls = i === sec ? 'sec' : r.sel[i] ? 'sel' : '';
+    return `<div class="mc ${cls} ${r.sel[i] && i === sec ? 'sel' : ''}" data-fit><span class="mn">${i === sec ? 'segreta' : num}</span>${nameSpan(c.n, 0.42)}${r.sel[i] ? '<span class="sr">, selezionata</span>' : ''}</div>`;
+  }).join('');
+  return `<div class="sg">
+  <header class="sghead"><div style="display:flex;align-items:center;gap:10px">${LOGO(34)}<span class="title">SOMIGLIANZE</span></div><button class="menubtn mono" data-act="menu">menu</button></header>
+  <div class="sgstat mono">${s.mode === 'local' ? 'stesso PC' : `<span class="dot ${r.peers.lim ? 'on' : ''}"></span>stanza ${esc(s.code)}${r.peers.lim ? ' · LIM collegata' : ' · LIM non collegata'}`} · ${ph === 'won' || ph === 'lost' ? 'fine partita' : `turno ${r.round}/5`}</div>
+  ${banner}
+  <div class="secret">${sc.img ? `<img class="simg" src="${esc(sc.img)}" alt="">` : ''}<div style="min-width:0"><span class="lbl mono">la tua carta segreta · n. ${pad(sec + 1)}</span><span class="snm">${esc(sc.n)}</span></div></div>
+  ${main}
+  <div class="sect mono">il tavolo</div>
+  <div class="mboard">${board}</div>
+  ${r.clues.length ? `<div class="sect mono">indizi giocati</div><div class="chips">${chips(r.clues)}</div>` : ''}
+  ${S.ui.flash ? `<div class="msg" role="status">${esc(S.ui.flash)}</div>` : ''}
+</div>`;
+}
+
+function vMenu() {
+  const r = S.room;
+  return `<div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-t"><div class="modalbox">
+    <h2 id="m-t">Come si gioca</h2>
+    <ul>${RULES_HTML}</ul>
+    <div class="row">
+      ${S.session && S.session.role === 'lim' ? '<button class="btn sm ink" data-act="fullscreen">Schermo intero</button>' : ''}
+      ${r && r.phase !== 'won' && r.phase !== 'lost' ? '<button class="btn sm ink" data-act="newGame">Ricomincia con nuove carte</button>' : ''}
+      ${S.session && S.session.mode === 'local' ? '<button class="btn sm ink" data-act="openOther">Apri l’altra finestra</button>' : ''}
+    </div>
+    <div class="row" style="margin-top:16px">
+      ${S.ui.confirmExit ? `<button class="btn sm or" data-act="exit">Sì, chiudi la partita</button><button class="lnk" data-act="noExit">Annulla</button><span class="muted" style="flex-basis:100%;font-size:15px">La partita si chiude anche sull’altro schermo.</span>`
+        : '<button class="btn sm ink" data-act="askExit">Chiudi la partita</button>'}
+      <button class="btn sm or" data-act="closeMenu" style="margin-left:auto">Torna al gioco</button>
+    </div>
+  </div></div>`;
+}
+
+function vGame() {
+  if (S.ui.err) return `<div class="center"><div class="panel" style="max-width:520px"><h2>Ops</h2><p>${esc(S.ui.err)}</p><div class="row"><button class="btn or" data-act="home">Torna alla pagina iniziale</button></div></div></div>`;
+  if (!S.room) return `<div class="center mono" role="status">Collegamento alla partita…</div>`;
+  return (S.session.role === 'lim' ? vLim() : vSugg()) + (S.ui.menu ? vMenu() : '');
+}
+
+/* ---------- render ---------- */
+function render() {
+  const keep = document.activeElement && document.activeElement.id;
+  const html = S.view === 'home' ? vHome() : S.view === 'decks' ? vDecks() : S.view === 'edit' ? vEdit() : S.view === 'guide' ? vGuide() : vGame();
+  $app.innerHTML = html;
+  document.body.style.overflow = (S.view === 'game' && S.session && S.session.role === 'lim') ? 'hidden' : '';
+  if (keep) { const el = document.getElementById(keep); if (el && el.tagName === 'INPUT') el.focus(); }
+  layoutStage(); fitAll(); fillQRs();
+  if (S.ui.anchor) { const a = document.getElementById(S.ui.anchor); S.ui.anchor = null; if (a) a.scrollIntoView(); }
+}
+function layoutStage() {
+  const st = document.getElementById('stage'); if (!st) return;
+  const s = Math.min(innerWidth / 1280, innerHeight / 720);
+  st.style.transform = `scale(${s})`;
+  st.style.left = Math.max(0, (innerWidth - 1280 * s) / 2) + 'px';
+  st.style.top = Math.max(0, (innerHeight - 720 * s) / 2) + 'px';
+}
+addEventListener('resize', () => { layoutStage(); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitAll());
+
+/* ---------- azioni ---------- */
+async function syncDeck(d) {
+  if (!d || !d.src) return;
+  setMsg('Aggiorno il mazzo dal Foglio Google…', true);
+  try {
+    const fresh = rowsToCards(await fetchSheet(d.src));
+    if (!fresh.length) return setMsg('Nel foglio non ho trovato carte.');
+    d.cards = fresh; d.synced = Date.now();
+    if (saveDecks()) setMsg(`Mazzo aggiornato: ${fresh.length} carte.`, true);
+  } catch (e) { setMsg(e.message); }
+}
+const ACT = {
+  go: b => { S.view = b.dataset.v; S.ui.msg = ''; S.ui.gsOpen = false; S.ui.delAsk = null; S.ui.wipeAsk = false; render(); scrollTo(0, 0); },
+  guide: b => { S.view = 'guide'; S.ui.msg = ''; S.ui.anchor = b && b.dataset.anchor || null; render(); if (!S.ui.anchor && !(b && b.dataset.anchor)) scrollTo(0, 0); },
+  jump: b => { const a = document.getElementById(b.dataset.anchor); if (a) a.scrollIntoView({ behavior: 'smooth' }); },
+  home: () => goHome(),
+  pick: b => { S.pref[b.dataset.k] = b.dataset.v; S.ui.msg = ''; savePref(); render(); },
+  start: () => startGame(),
+  join: () => { const el = document.getElementById('joinCode'); joinGame(el ? el.value : ''); },
+  joinAs: b => joinGame(S.ui.joinAsk, b.dataset.v),
+  joinCancel: () => { S.ui.joinAsk = null; render(); },
+  template: () => downloadText('somiglianze-modello.csv', 'nome,immagine\nCristoforo Colombo,\nMarie Curie,\n'),
+  pickFile: b => { const el = document.getElementById(b.dataset.for); if (el) el.click(); },
+  newDeck: () => { const d = { id: uid(), name: 'Nuovo mazzo', cards: [], temp: S.pref.keep === 'lesson' }; S.decks.push(d); saveDecks(); S.editId = d.id; S.view = 'edit'; S.ui.msg = ''; S.ui.gsOpen = false; render(); scrollTo(0, 0); },
+  goSheet: () => { S.view = 'decks'; S.ui.gsOpen = true; S.ui.msg = ''; render(); const el = document.getElementById('gsUrl'); el && el.focus(); },
+  edit: b => { S.editId = b.dataset.id; S.view = 'edit'; S.ui.msg = ''; S.ui.gsOpen = false; render(); scrollTo(0, 0); },
+  export: b => { const d = deckById(b.dataset.id); if (d) exportCSV(d); },
+  delAsk: b => { S.ui.delAsk = b.dataset.id; render(); },
+  delDeck: b => { S.decks = S.decks.filter(d => d.id !== b.dataset.id); S.ui.delAsk = null; saveDecks(); render(); },
+  toggleTemp: b => { const d = deckById(b.dataset.id); if (!d) return; d.temp = !d.temp; if (saveDecks()) setMsg(d.temp ? `«${d.name}» resta solo per questa lezione.` : `«${d.name}» è salvato su questo dispositivo.`, true); },
+  syncDeck: b => syncDeck(deckById(b.dataset.id)),
+  unlink: b => { const d = deckById(b.dataset.id); if (!d) return; delete d.src; if (saveDecks()) setMsg('Mazzo scollegato dal foglio: ora puoi modificarlo qui.', true); },
+  wipeAsk: () => { S.ui.wipeAsk = true; render(); },
+  wipeNo: () => { S.ui.wipeAsk = false; render(); },
+  wipe: () => { wipeAll(); S.ui.wipeAsk = false; S.view = 'home'; setMsg('Fatto: in questo browser non resta nessun mazzo.', true); scrollTo(0, 0); },
+  gsToggle: () => { S.ui.gsOpen = !S.ui.gsOpen; render(); if (S.ui.gsOpen) { const el = document.getElementById('gsUrl'); el && el.focus(); } },
+  importSheet: async b => {
+    const el = document.getElementById('gsUrl'); const target = (b && b.dataset.target) || (el && el.dataset.target);
+    const u = el ? el.value.trim() : ''; if (!u) return;
+    const lk = document.getElementById('gsLink'); const link = target === 'newDeck' && (!lk || lk.checked);
+    S.ui.gsLink = !lk || lk.checked;
+    setMsg('Leggo il foglio…', true);
+    try { const cards = rowsToCards(await fetchSheet(u)); addImported(cards, target, 'Mazzo da Foglio Google', null, link ? u : null); }
+    catch (e) { setMsg(e.message); }
+  },
+  addCard: () => {
+    const d = deckById(S.editId); const n = document.getElementById('addN'), im = document.getElementById('addImg');
+    const name = n.value.trim(); if (!name) { n.focus(); return; }
+    const img = S.ui.addImgData || safeImg(im.value);
+    d.cards.push(img ? { n: name, img } : { n: name }); S.ui.addImgData = null;
+    if (saveDecks()) S.ui.msg = '';
+    render(); const nn = document.getElementById('addN'); nn && nn.focus();
+  },
+  delCard: b => { const d = deckById(S.editId); d.cards.splice(+b.dataset.i, 1); saveDecks(); render(); },
+  sel: b => selectCard(+b.dataset.i),
+  flip: b => flipCard(+b.dataset.i),
+  clearSel: () => push({ sel: zeros() }),
+  hand: b => { const i = +b.dataset.i; S.ui.hand = S.ui.hand === i ? null : i; render(); },
+  clue: b => playClue(b.dataset.k),
+  newGame: () => newGame(),
+  menu: () => { S.ui.menu = true; S.ui.confirmExit = false; render(); },
+  closeMenu: () => { S.ui.menu = false; render(); },
+  askExit: () => { S.ui.confirmExit = true; render(); },
+  noExit: () => { S.ui.confirmExit = false; render(); },
+  exit: () => exitGame(),
+  hideWait: () => { S.ui.hideWait = true; render(); },
+  openOther: () => { S.ui.menu = false; openOther(); },
+  fullscreen: () => { S.ui.menu = false; render(); const el = document.documentElement; (el.requestFullscreen ? el.requestFullscreen() : Promise.reject()).catch(() => flash('Schermo intero non disponibile: usa il tasto F11.')); },
+};
+function addImported(cards, target, fallbackName, fileName, src) {
+  if (!cards.length) return setMsg('Non ho trovato carte: serve una colonna con i nomi.');
+  if (target === 'appendDeck') {
+    const d = deckById(S.editId); d.cards.push(...cards);
+    if (saveDecks()) setMsg(`Aggiunte ${cards.length} carte.`, true);
+  } else {
+    const d = { id: uid(), name: (fileName || fallbackName).replace(/\.[^.]+$/, ''), cards, temp: S.pref.keep === 'lesson' };
+    if (src) { d.src = src; d.synced = Date.now(); }
+    S.decks.push(d);
+    if (saveDecks()) { S.editId = d.id; S.view = 'edit'; S.ui.gsOpen = false; setMsg(`Importate ${cards.length} carte. Controlla i nomi e dai un nome al mazzo.`, true); scrollTo(0, 0); }
+  }
+}
+
+$app.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
+  const f = ACT[b.dataset.act]; if (f) f(b, e);
+});
+$app.addEventListener('change', async e => {
+  const t = e.target;
+  if (t.id === 'gsLink') { S.ui.gsLink = t.checked; return; }
+  if (t.dataset.edit) {
+    const d = deckById(S.editId); if (!d) return;
+    if (t.dataset.edit === 'name') { d.name = t.value.trim() || 'Senza nome'; saveDecks(); return; }
+    const c = d.cards[+t.dataset.i]; if (!c) return;
+    if (t.dataset.edit === 'n') { const v = t.value.trim(); if (v) c.n = v; else t.value = c.n; }
+    if (t.dataset.edit === 'img') { const v = safeImg(t.value); if (v) c.img = v; else if (!t.value.trim()) delete c.img; }
+    saveDecks(); if (t.dataset.edit === 'img') render();
+    return;
+  }
+  if (t.type === 'file' && t.files && t.files[0]) {
+    const file = t.files[0], kind = t.dataset.file;
+    try {
+      if (kind === 'newDeck' || kind === 'appendDeck') { setMsg('Leggo il file…', true); addImported(rowsToCards(await readTable(file)), kind, 'Mazzo importato', file.name); }
+      else if (kind === 'addImg') { S.ui.addImgData = await fileToDataUrl(file); const n = document.getElementById('addN'); const keepName = n ? n.value : ''; render(); const nn = document.getElementById('addN'); if (nn) { nn.value = keepName; nn.focus(); } }
+      else if (kind === 'rowImg') { const d = deckById(S.editId); d.cards[+t.dataset.i].img = await fileToDataUrl(file); saveDecks(); render(); }
+    } catch (err) { setMsg('Non riesco a leggere il file: ' + (err.message || err)); }
+    t.value = '';
+  }
+});
+$app.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const id = e.target.id;
+  if (id === 'addN' || id === 'addImg') { e.preventDefault(); ACT.addCard(); }
+  else if (id === 'joinCode') { e.preventDefault(); ACT.join(); }
+  else if (id === 'gsUrl') { e.preventDefault(); ACT.importSheet(); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.ui.menu) { S.ui.menu = false; render(); } });
+
+/* ---------- avvio ---------- */
+loadDecks();
+(function boot() {
+  const lg = lsGet(LS_LOCAL, null);
+  if (lg && (!lg.createdAt || Date.now() - lg.createdAt > LOCAL_MAX_HOURS * 3600000)) { try { localStorage.removeItem(LS_LOCAL); } catch {} }
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('locale') === 'lim' || h.get('locale') === 'sugg') return enterGame({ mode: 'local', role: h.get('locale') });
+  if (fbConfig()) {
+    if (h.get('stanza') && /^(lim|sugg)$/.test(h.get('ruolo') || '')) return enterGame({ mode: 'fb', code: h.get('stanza'), role: h.get('ruolo') });
+    if (h.get('entra')) { setHash(''); render(); return joinGame(h.get('entra')); }
+  } else if (location.hash) setHash('');
+  render();
+})();
+</script>
+</body>
+</html>
